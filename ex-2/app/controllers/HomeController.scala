@@ -6,11 +6,10 @@ import play.api.mvc.{Action, AnyContent, MessagesAbstractController, MessagesCon
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class TestController @Inject()(messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
+class HomeController @Inject()(messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
   def index: Action[AnyContent] = Action {
-    Ok("ok")
+    Ok("Welcome")
   }
 }
-

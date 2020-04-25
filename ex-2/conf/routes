@@ -1,1 +1,12 @@
-GET / controllers.TestController.index
+# TODO - rest of the routes will be configured after having designed the model in exercise 3
+
+GET           /                           controllers.HomeController.index
+
+GET           /add-product                controllers.ProductController.addProduct
+POST          /added-product              controllers.ProductController.saveAddedProduct
+GET           /update-product/:id         controllers.ProductController.updateProduct(id: Long)
+PATCH         /updated-product            controllers.ProductController.saveUpdatedProduct
+GET           /delete-product/:id         controllers.ProductController.deleteProduct(id: Long)
+DELETE        /deleted-product            controllers.ProductController.saveDeletedProduct
+GET           /display-product/:id        controllers.ProductController.displayProduct(id: Long)
+GET           /display-products           controllers.ProductController.displayProducts
