@@ -1,12 +1,13 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
+import models.ProductRepository
 import play.api.mvc.{Action, AnyContent, MessagesAbstractController, MessagesControllerComponents}
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ProductController @Inject()(messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
+class ProductController @Inject()(productRepository: ProductRepository, messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
   def addProduct(): Action[AnyContent] = Action {
@@ -33,8 +34,11 @@ class ProductController @Inject()(messagesControllerComponents: MessagesControll
     Ok("Deleted a product...")
   }
 
-  def displayProduct(id: Long): Action[AnyContent] = Action {
-    Ok("Product" + id)
+  def displayProduct(id: Long): Action[AnyContent] = Action.async {
+    productRepository.getByIdOption(id).map {
+      case Some(p) => Ok("Product " + p.name)
+      case None => Redirect(routes.HomeController.index())
+    }
   }
 
   def displayProducts(): Action[AnyContent] = Action {
