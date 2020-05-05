@@ -1,8 +1,8 @@
-package models
+package models.category
 
 import play.api.libs.json._
 
-case class Category(id: Int, name: String)
+case class Category(id: Long, name: String)
 
 object Category {
   implicit val categoryFormat: OFormat[Category] = Json.format[Category]

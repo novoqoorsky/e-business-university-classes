@@ -42,7 +42,10 @@ CREATE TABLE "user"
     "id"        INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "user_name" VARCHAR NOT NULL,
     "password"  VARCHAR NOT NULL,
-    "email"     VARCHAR NOT NULL
+    "email"     VARCHAR NOT NULL,
+    "client"    INT,
+
+    FOREIGN KEY (client) REFERENCES client (id)
 );
 
 CREATE TABLE "client"
@@ -51,7 +54,7 @@ CREATE TABLE "client"
     "name"      VARCHAR NOT NULL,
     "last_name" VARCHAR NOT NULL,
     "address"   INT     NOT NULL,
-    "cart"      INT     NOT NULL,
+    "cart"      INT,
 
     FOREIGN KEY (address) REFERENCES address (id),
     FOREIGN KEY (cart) REFERENCES cart (id)
@@ -59,7 +62,8 @@ CREATE TABLE "client"
 
 CREATE TABLE "cart"
 (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+    "id"    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "value" NUMERIC
 );
 
 CREATE TABLE "cart_products"
@@ -74,7 +78,8 @@ CREATE TABLE "cart_products"
 
 CREATE TABLE "order"
 (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+    "id"        INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "reference" VARCHAR NOT NULL
 );
 
 CREATE TABLE "client_orders"
