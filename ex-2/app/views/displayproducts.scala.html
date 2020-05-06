@@ -1,0 +1,9 @@
+@(products: Seq[product.Product])
+
+<p>Products:</p>
+
+@for(product <- products) {
+    <b>@product.name</b>
+    <p>@product.description</p>
+    <p>@product.category</p>
+}

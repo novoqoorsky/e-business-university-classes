@@ -10,6 +10,6 @@ class HomeController @Inject()(messagesControllerComponents: MessagesControllerC
   extends MessagesAbstractController(messagesControllerComponents) {
 
   def index: Action[AnyContent] = Action {
-    Ok("Welcome")
+    Ok(views.html.index("Welcome to Strong@Home store!"))
   }
 }

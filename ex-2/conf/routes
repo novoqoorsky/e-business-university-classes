@@ -1,5 +1,3 @@
-# TODO - rest of the routes will be configured after having designed the model in exercise 3
-
 GET           /                           controllers.HomeController.index
 
 GET           /add-product                controllers.ProductController.addProduct
@@ -10,3 +8,5 @@ GET           /delete-product/:id         controllers.ProductController.deletePr
 DELETE        /deleted-product            controllers.ProductController.saveDeletedProduct
 GET           /display-product/:id        controllers.ProductController.displayProduct(id: Long)
 GET           /display-products           controllers.ProductController.displayProducts
+
+GET           /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
