@@ -10,8 +10,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ClientOrdersRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
-                                        clientRepository: ClientRepository,
-                                        orderRepository: OrderRepository)(implicit ec: ExecutionContext) {
+                                        val clientRepository: ClientRepository,
+                                        val orderRepository: OrderRepository)(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -23,15 +23,18 @@ class ClientOrdersRepository @Inject() (dbConfigProvider: DatabaseConfigProvider
     def client = column[Long]("client")
     def order = column[Long]("order")
 
-    //def category_fk = foreignKey("category_fk", client, clients)(_.id)
-    //def producer_fk = foreignKey("producer_fk", order, orders)(_.id)
+    def category_fk = foreignKey("category_fk", client, clients)(_.id)
+    def producer_fk = foreignKey("producer_fk", order, orders)(_.id)
 
     def * = (id, client, order) <> ((ClientOrders.apply _).tupled, ClientOrders.unapply)
   }
 
+  import clientRepository.ClientTable
+  import orderRepository.OrderTable
+
   private val clientOrders = TableQuery[ClientOrdersTable]
-  //private val clients = TableQuery[ClientTable]
-  //private val orders = TableQuery[OrderTable]
+  private val clients = TableQuery[ClientTable]
+  private val orders = TableQuery[OrderTable]
 
   def create(client: Long, order: Long): Future[ClientOrders] = db.run {
     (clientOrders.map(co => (co.client, co.order))

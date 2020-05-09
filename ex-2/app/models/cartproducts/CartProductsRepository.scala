@@ -10,8 +10,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CartProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
-                                       cartRepository: CartRepository,
-                                       productRepository: ProductRepository)(implicit ec: ExecutionContext) {
+                                       val cartRepository: CartRepository,
+                                       val productRepository: ProductRepository)(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -23,15 +23,18 @@ class CartProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
     def cart = column[Long]("cart")
     def product = column[Long]("product")
 
-    //def cart_fk = foreignKey("category_fk", cart, carts)(_.id)
-    //def producer_fk = foreignKey("producer_fk", product, products)(_.id)
+    def cart_fk = foreignKey("category_fk", cart, carts)(_.id)
+    def producer_fk = foreignKey("producer_fk", product, products)(_.id)
 
     def * = (id, cart, product) <> ((CartProducts.apply _).tupled, CartProducts.unapply)
   }
 
+  import cartRepository.CartTable
+  import productRepository.ProductTable
+
   private val cartProducts = TableQuery[CartProductsTable]
-  //private val carts = TableQuery[CartTable]
-  //private val products = TableQuery[ProductTable]
+  private val carts = TableQuery[CartTable]
+  private val products = TableQuery[ProductTable]
 
   def create(cart: Long, product: Long): Future[CartProducts] = db.run {
     (cartProducts.map(cp => (cp.cart, cp.product))

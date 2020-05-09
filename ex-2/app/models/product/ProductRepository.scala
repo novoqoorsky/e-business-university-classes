@@ -10,8 +10,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ProductRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
-                                  categoryRepository: CategoryRepository,
-                                  producerRepository: ProducerRepository)(implicit ec: ExecutionContext) {
+                                  val categoryRepository: CategoryRepository,
+                                  val producerRepository: ProducerRepository)(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -26,15 +26,18 @@ class ProductRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
     def producer = column[Long]("producer")
     def price = column[Double]("price")
 
-    //def category_fk = foreignKey("category_fk", category, categories)(_.id)
-    //def producer_fk = foreignKey("producer_fk", producer, producers)(_.id)
+    def category_fk = foreignKey("category_fk", category, categories)(_.id)
+    def producer_fk = foreignKey("producer_fk", producer, producers)(_.id)
 
     def * = (id, name, description, category, producer, price) <> ((Product.apply _).tupled, Product.unapply)
   }
 
+  import categoryRepository.CategoryTable
+  import producerRepository.ProducerTable
+
   private val products = TableQuery[ProductTable]
-  //private val categories = TableQuery[CategoryTable]
-  //private val producers = TableQuery[ProducerTable]
+  private val categories = TableQuery[CategoryTable]
+  private val producers = TableQuery[ProducerTable]
 
   def create(name: String, description: String, category: Long, producer: Long, price: Double): Future[Product] = db.run {
     (products.map(p => (p.name, p.description, p.category, p.producer, p.price))

@@ -8,7 +8,7 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ProducerRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, addressRepository: AddressRepository)(implicit ec: ExecutionContext) {
+class ProducerRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, val addressRepository: AddressRepository)(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -20,13 +20,15 @@ class ProducerRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, ad
     def name = column[String]("name")
     def address = column[Long]("address")
 
-    //def address_fk = foreignKey("address_fk", address, addresses)(_.id)
+    def address_fk = foreignKey("address_fk", address, addresses)(_.id)
 
     def * = (id, name, address) <> ((Producer.apply _).tupled, Producer.unapply)
   }
 
+  import addressRepository.AddressTable
+
   private val producers = TableQuery[ProducerTable]
-  //private val addresses = TableQuery[AddressTable]
+  private val addresses = TableQuery[AddressTable]
 
   def create(name: String, address: Long): Future[Producer] = db.run {
     (producers.map(p => (p.name, p.address))

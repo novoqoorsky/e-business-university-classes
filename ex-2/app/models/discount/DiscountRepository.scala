@@ -8,7 +8,7 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DiscountRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, productRepository: ProductRepository)(implicit ec: ExecutionContext) {
+class DiscountRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, val productRepository: ProductRepository)(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -20,13 +20,15 @@ class DiscountRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, pr
     def product = column[Long]("product")
     def percentage = column[Int]("percentage")
 
-    //def product_fk = foreignKey("product_fk", product, products)(_.id)
+    def product_fk = foreignKey("product_fk", product, products)(_.id)
 
     def * = (id, product, percentage) <> ((Discount.apply _).tupled, Discount.unapply)
   }
 
+  import productRepository.ProductTable
+
   private val discounts = TableQuery[DiscountTable]
-  //private val products = TableQuery[ProductTable]
+  private val products = TableQuery[ProductTable]
 
   def create(product: Long, percentage: Int): Future[Discount] = db.run {
     (discounts.map(d => (d.product, d.percentage))

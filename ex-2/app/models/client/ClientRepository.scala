@@ -10,8 +10,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ClientRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
-                                  addressRepository: AddressRepository,
-                                  cartRepository: CartRepository)(implicit ec: ExecutionContext) {
+                                  val addressRepository: AddressRepository,
+                                  val cartRepository: CartRepository)(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -25,15 +25,15 @@ class ClientRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
     def address = column[Long]("address")
     def cart = column[Option[Long]]("cart")
 
-    //def address_fk = foreignKey("address_fk", address, addresses)(_.id)
-    //def cart_fk = foreignKey("cart_fk", cart, carts)(_.id)
+    def address_fk = foreignKey("address_fk", address, addresses)(_.id)
 
     def * = (id, name, lastName, address, cart) <> ((Client.apply _).tupled, Client.unapply)
   }
 
+  import addressRepository.AddressTable
+
   private val clients = TableQuery[ClientTable]
-  //private val addresses = TableQuery[AddressTable]
-  //private val carts = TableQuery[CartTable]
+  private val addresses = TableQuery[AddressTable]
 
   def create(name: String, lastName: String, address: Long): Future[Client] = db.run {
     (clients.map(c => (c.name, c.lastName, c.address))
