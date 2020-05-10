@@ -8,4 +8,12 @@ GET         /delete-product/:id         controllers.ProductController.deleteProd
 GET         /display-product/:id        controllers.ProductController.displayProduct(id: Long)
 GET         /display-products           controllers.ProductController.displayProducts
 
+GET         /add-address                controllers.AddressController.addAddress
+POST        /added-address              controllers.AddressController.saveAddedAddress
+GET         /update-address/:id         controllers.AddressController.updateAddress(id: Long)
+POST         /updated-address            controllers.AddressController.saveUpdatedAddress
+GET         /delete-address/:id         controllers.AddressController.deleteAddress(id: Long)
+GET         /display-address/:id        controllers.AddressController.displayAddress(id: Long)
+GET         /display-addresses           controllers.AddressController.displayAddresses
+
 GET         /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

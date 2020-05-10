@@ -1,0 +1,17 @@
+@import views.html.helper.{form, inputText}
+
+@(product: Form[CreateAddressForm])(implicit request: MessagesRequestHeader, flash: Flash)
+
+@flash.get("success").getOrElse("")
+
+@form(routes.AddressController.saveAddedAddress()) {
+    @helper.CSRF.formField
+    @inputText(product("city"))
+    @inputText(product("streetName"))
+    @inputText(product("houseNumber"))
+    @inputText(product("postalCode"))
+
+    <div class="buttons">
+        <input type="submit" value="Add Address"/>
+    </div>
+}
