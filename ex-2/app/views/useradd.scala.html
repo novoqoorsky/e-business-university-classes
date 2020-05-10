@@ -1,0 +1,24 @@
+@import models.client.Client
+@import views.html.helper.{form, inputPassword, inputText}
+@(user: Form[CreateUserForm], client: Seq[Client])(implicit request: MessagesRequestHeader, flash: Flash)
+
+@flash.get("success").getOrElse("")
+
+@form(routes.UserController.saveAddedUser()) {
+    @helper.CSRF.formField
+    @inputText(user("userName"))
+    @inputPassword(user("password"))
+    @inputText(user("email"))
+
+    <label for="client"></label>
+    <select name="client" id="client">
+    @for(c <- client){
+        <option value="@c.id">@c.name</option>
+    }
+    </select>
+
+
+    <div class="buttons">
+        <input type="submit" value="Add User"/>
+    </div>
+}

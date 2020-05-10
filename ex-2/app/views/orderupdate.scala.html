@@ -1,0 +1,14 @@
+@import views.html.helper.{form, inputText}
+
+@(order: Form[UpdateOrderForm])(implicit request: MessagesRequestHeader, flash: Flash)
+@flash.get("success").getOrElse("")
+
+@form(routes.OrderController.saveUpdatedOrder()) {
+    @helper.CSRF.formField
+    <input name="id" id="id" value="@order("id").value" type="hidden"/>
+    @inputText(order("reference"))
+
+    <div class="buttons">
+        <input type="submit" value="Update Order"/>
+    </div>
+}

@@ -1,0 +1,13 @@
+@(categories: Seq[category.Category])
+
+<p>Categories:</p>
+<p></p>
+
+@for(category <- categories) {
+<p>
+    <b>@category.id</b><b>.</b>
+    @category.name
+    <a href="@controllers.routes.CategoryController.updateCategory(category.id)">Edit</a>
+    <a href="@controllers.routes.CategoryController.deleteCategory(category.id)">Delete</a>
+</p>
+}

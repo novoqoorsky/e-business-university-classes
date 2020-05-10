@@ -16,14 +16,14 @@ class CartRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implic
   class CartTable(tag: Tag) extends Table[Cart](tag, "cart") {
 
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def value = column[Double]("value")
+    def value = column[Int]("value")
 
     def * = (id, value) <> ((Cart.apply _).tupled, Cart.unapply)
   }
 
   private val carts = TableQuery[CartTable]
 
-  def create(value: Double): Future[Cart] = db.run {
+  def create(value: Int): Future[Cart] = db.run {
     (carts.map(c => (c.value))
       returning carts.map(_.id)
       into ((value, id) => Cart(id, value))

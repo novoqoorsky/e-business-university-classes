@@ -1,0 +1,28 @@
+@import models.product.Product
+@import views.html.helper.{form, inputText}
+
+@(discount: Form[UpdateDiscountForm], product: Seq[Product])(implicit request: MessagesRequestHeader, flash: Flash)
+@flash.get("success").getOrElse("")
+
+@form(routes.DiscountController.saveUpdatedDiscount()) {
+    @helper.CSRF.formField
+    <input name="id" id="id" value="@discount("id").value" type="hidden"/>
+
+    <label for="product"></label>
+    <select name="product" id="product">
+    @for(p <- product){
+        @if(p.id.toString==discount("product").value.getOrElse(0)) {
+            <option value="@p.id" selected>@p.name</option>
+        }else{
+            <option value="@p.id">@p.name</option>
+        }
+
+    }
+    </select>
+
+    @inputText(discount("percentage"))
+
+    <div class="buttons">
+        <input type="submit" value="Update Discount"/>
+    </div>
+}

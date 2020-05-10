@@ -1,0 +1,23 @@
+@import models.product.Product
+@import views.html.helper.{form, inputText}
+
+@(discount: Form[CreateDiscountForm], product: Seq[Product])(implicit request: MessagesRequestHeader, flash: Flash)
+
+@flash.get("success").getOrElse("")
+
+@form(routes.DiscountController.saveAddedDiscount()) {
+    @helper.CSRF.formField
+
+    <label for="product"></label>
+    <select name="product" id="product">
+    @for(p <- product){
+        <option value="@p.id">@p.name</option>
+    }
+    </select>
+
+    @inputText(discount("percentage"))
+
+    <div class="buttons">
+        <input type="submit" value="Add Discount"/>
+    </div>
+}

@@ -23,7 +23,7 @@ class ClientRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
     def name = column[String]("name")
     def lastName = column[String]("last_name")
     def address = column[Long]("address")
-    def cart = column[Option[Long]]("cart")
+    def cart = column[Long]("cart")
 
     def address_fk = foreignKey("address_fk", address, addresses)(_.id)
 
@@ -35,11 +35,11 @@ class ClientRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
   private val clients = TableQuery[ClientTable]
   private val addresses = TableQuery[AddressTable]
 
-  def create(name: String, lastName: String, address: Long): Future[Client] = db.run {
-    (clients.map(c => (c.name, c.lastName, c.address))
+  def create(name: String, lastName: String, address: Long, cart: Long): Future[Client] = db.run {
+    (clients.map(c => (c.name, c.lastName, c.address, c.cart))
       returning clients.map(_.id)
-      into { case ((name, lastName, address), id) => Client(id, name, lastName, address, None) }
-      ) += (name, lastName, address)
+      into { case ((name, lastName, address, cart), id) => Client(id, name, lastName, address, cart) }
+      ) += (name, lastName, address, cart)
   }
 
   def list(): Future[Seq[Client]] = db.run {

@@ -1,0 +1,16 @@
+@(clients: Seq[client.Client])
+
+<p>Clients:</p>
+<p></p>
+
+@for(client <- clients) {
+    <p>
+        <b>@client.id</b><b>.</b>
+        @client.name
+        @client.lastName
+        @client.address
+        @client.cart
+        <a href="@controllers.routes.ClientController.updateClient(client.id)">Edit</a>
+        <a href="@controllers.routes.ClientController.deleteClient(client.id)">Delete</a>
+    </p>
+}

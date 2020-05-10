@@ -1,0 +1,14 @@
+@(producers: Seq[producer.Producer])
+
+<p>Producers:</p>
+<p></p>
+
+@for(producer <- producers) {
+    <p>
+        <b>@producer.id</b><b>.</b>
+        <b>@producer.name</b>
+        @producer.address
+        <a href="@controllers.routes.ProducerController.updateProducer(producer.id)">Edit</a>
+        <a href="@controllers.routes.ProducerController.deleteProducer(producer.id)">Delete</a>
+    </p>
+}

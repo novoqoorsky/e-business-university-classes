@@ -1,0 +1,40 @@
+@import models.address.Address
+@import models.cart.Cart
+@import views.html.helper.{form, inputText}
+@(client: Form[UpdateClientForm], address: Seq[Address], cart: Seq[Cart])(implicit request: MessagesRequestHeader, flash: Flash)
+@flash.get("success").getOrElse("")
+
+@form(routes.ClientController.saveUpdatedClient()) {
+    @helper.CSRF.formField
+    <input name="id" id="id" value="@client("id").value" type="hidden"/>
+    @inputText(client("name"))
+    @inputText(client("lastName"))
+
+    <label for="address"></label>
+    <select name="address" id="address">
+    @for(a <- address){
+        @if(a.id.toString==client("address").value.getOrElse(0)) {
+            <option value="@a.id" selected>@a.id</option>
+        }else{
+            <option value="@a.id">@a.id</option>
+        }
+
+    }
+    </select>
+
+    <label for="cart"></label>
+    <select name="cart" id="cart">
+    @for(c <- cart){
+        @if(c.id.toString==client("cart").value.getOrElse(0)) {
+            <option value="@c.id" selected>@c.id</option>
+        }else{
+            <option value="@c.id">@c.id</option>
+        }
+
+    }
+    </select>
+
+    <div class="buttons">
+        <input type="submit" value="Update Client"/>
+    </div>
+}

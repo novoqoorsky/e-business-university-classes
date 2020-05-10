@@ -1,0 +1,26 @@
+@import models.address.Address
+@import views.html.helper.{form, inputText}
+@(producer: Form[UpdateProducerForm], address: Seq[Address])(implicit request: MessagesRequestHeader, flash: Flash)
+@flash.get("success").getOrElse("")
+
+@form(routes.ProducerController.saveUpdatedProducer()) {
+    @helper.CSRF.formField
+    <input name="id" id="id" value="@producer("id").value" type="hidden"/>
+    @inputText(producer("name"))
+
+    <label for="address"></label>
+    <select name="address" id="address">
+    @for(a <- address){
+        @if(a.id.toString==producer("address").value.getOrElse(0)) {
+            <option value="@a.id" selected>@a.city</option>
+        }else{
+            <option value="@a.id">@a.city</option>
+        }
+
+    }
+    </select>
+
+    <div class="buttons">
+        <input type="submit" value="Update Producer"/>
+    </div>
+}

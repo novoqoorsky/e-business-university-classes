@@ -1,0 +1,21 @@
+@import models.address.Address
+@import views.html.helper.{form, inputText}
+@(producer: Form[CreateProducerForm], address: Seq[Address])(implicit request: MessagesRequestHeader, flash: Flash)
+
+@flash.get("success").getOrElse("")
+
+@form(routes.ProducerController.saveAddedProducer()) {
+    @helper.CSRF.formField
+    @inputText(producer("name"))
+
+    <label for="address"></label>
+    <select name="address" id="address">
+    @for(a <- address){
+        <option value="@a.id">@a.city</option>
+    }
+    </select>
+
+    <div class="buttons">
+        <input type="submit" value="Add Producer"/>
+    </div>
+}

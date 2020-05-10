@@ -1,0 +1,28 @@
+@import models.client.Client
+@import views.html.helper.{form, inputPassword, inputText}
+@(user: Form[UpdateUserForm], client: Seq[Client])(implicit request: MessagesRequestHeader, flash: Flash)
+@flash.get("success").getOrElse("")
+
+@form(routes.UserController.saveUpdatedUser()) {
+    @helper.CSRF.formField
+    <input name="id" id="id" value="@user("id").value" type="hidden"/>
+    @inputText(user("userName"))
+    @inputPassword(user("password"))
+    @inputText(user("email"))
+
+    <label for="client"></label>
+    <select name="client" id="client">
+    @for(c <- client){
+        @if(c.id.toString==user("client").value.getOrElse(0)) {
+            <option value="@c.id" selected>@c.name</option>
+        }else{
+            <option value="@c.id">@c.name</option>
+        }
+
+    }
+    </select>
+
+    <div class="buttons">
+        <input type="submit" value="Update User"/>
+    </div>
+}

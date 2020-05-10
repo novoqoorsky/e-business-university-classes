@@ -1,0 +1,13 @@
+@(orders: Seq[order.Order])
+
+<p>Orders:</p>
+<p></p>
+
+@for(order <- orders) {
+    <p>
+        <b>@order.id</b><b>.</b>
+        @order.reference
+        <a href="@controllers.routes.OrderController.updateOrder(order.id)">Edit</a>
+        <a href="@controllers.routes.OrderController.deleteOrder(order.id)">Delete</a>
+    </p>
+}

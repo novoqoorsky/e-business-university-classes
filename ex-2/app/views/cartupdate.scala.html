@@ -1,0 +1,14 @@
+@import views.html.helper.{form, inputText}
+
+@(cart: Form[UpdateCartForm])(implicit request: MessagesRequestHeader, flash: Flash)
+@flash.get("success").getOrElse("")
+
+@form(routes.CartController.saveUpdatedCart()) {
+    @helper.CSRF.formField
+    <input name="id" id="id" value="@cart("id").value" type="hidden"/>
+    @inputText(cart("value"))
+
+    <div class="buttons">
+        <input type="submit" value="Update Cart"/>
+    </div>
+}

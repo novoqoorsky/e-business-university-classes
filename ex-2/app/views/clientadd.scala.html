@@ -1,0 +1,30 @@
+@import models.address.Address
+@import models.cart.Cart
+@import views.html.helper.{form, inputText}
+@(client: Form[CreateClientForm], address: Seq[Address], cart: Seq[Cart])(implicit request: MessagesRequestHeader, flash: Flash)
+
+@flash.get("success").getOrElse("")
+
+@form(routes.ClientController.saveAddedClient()) {
+    @helper.CSRF.formField
+    @inputText(client("name"))
+    @inputText(client("lastName"))
+
+    <label for="address"></label>
+    <select name="address" id="address">
+    @for(a <- address){
+        <option value="@a.id">@a.id</option>
+    }
+    </select>
+
+    <label for="cart"></label>
+    <select name="cart" id="cart">
+    @for(c <- cart){
+        <option value="@c.id">@c.id</option>
+    }
+    </select>
+
+    <div class="buttons">
+        <input type="submit" value="Add Client"/>
+    </div>
+}

@@ -1,0 +1,92 @@
+package controllers
+
+import javax.inject.{Inject, Singleton}
+import models.category.{Category, CategoryRepository}
+import play.api.data.Form
+import play.api.data.Forms._
+import play.api.mvc._
+
+import scala.concurrent.{ExecutionContext, Future}
+
+@Singleton
+class CategoryController @Inject()(categoryRepository: CategoryRepository, messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
+  extends MessagesAbstractController(messagesControllerComponents) {
+
+  val categoryForm: Form[CreateCategoryForm] = Form {
+    mapping(
+      "name" -> nonEmptyText
+    )(CreateCategoryForm.apply)(CreateCategoryForm.unapply)
+  }
+
+  val updateCategoryForm: Form[UpdateCategoryForm] = Form {
+    mapping(
+      "id" -> longNumber,
+      "name" -> nonEmptyText
+    )(UpdateCategoryForm.apply)(UpdateCategoryForm.unapply)
+  }
+
+  def addCategory(): Action[AnyContent] = Action { implicit request: MessagesRequest[AnyContent] =>
+    Ok(views.html.categoryadd(categoryForm))
+  }
+
+  def updateCategory(id: Long): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
+
+    categoryRepository.getById(id).map(category => {
+      val filledUpdateForm = updateCategoryForm.fill(UpdateCategoryForm(category.id, category.name))
+      Ok(views.html.categoryupdate(filledUpdateForm))
+    })
+
+  }
+
+  def deleteCategory(id: Long): Action[AnyContent] = Action {
+    categoryRepository.delete(id)
+    Redirect("/display-categories")
+  }
+
+  def displayCategory(id: Long): Action[AnyContent] = Action.async { implicit request =>
+    categoryRepository.getByIdOption(id).map {
+      case Some(c) => Ok("Category " + c.name)
+      case None => Redirect(routes.HomeController.index())
+    }
+  }
+
+  def displayCategories(): Action[AnyContent] = Action.async { implicit request =>
+    categoryRepository.list().map(categories => Ok(views.html.categoriesdisplay(categories)))
+  }
+
+  def saveAddedCategory(): Action[AnyContent] = Action.async { implicit request =>
+
+    categoryForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(
+          BadRequest(views.html.categoryadd(errorForm))
+        )
+      },
+      category => {
+        categoryRepository.create(category.name).map { _ =>
+          routes.CategoryController.addCategory()
+          Redirect("/display-categories")
+        }
+      }
+    )
+  }
+
+  def saveUpdatedCategory(): Action[AnyContent] = Action.async { implicit request =>
+    updateCategoryForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(
+          BadRequest(views.html.categoryupdate(errorForm))
+        )
+      },
+      category => {
+        categoryRepository.update(category.id, Category(category.id, category.name)).map { _ =>
+          routes.CategoryController.updateCategory(category.id)
+          Redirect("/display-categories")
+        }
+      }
+    )
+  }
+}
+
+case class CreateCategoryForm(name: String)
+case class UpdateCategoryForm(id: Long, name: String)

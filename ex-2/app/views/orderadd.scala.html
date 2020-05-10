@@ -1,0 +1,14 @@
+@import views.html.helper.{form, inputText}
+
+@(order: Form[CreateOrderForm])(implicit request: MessagesRequestHeader, flash: Flash)
+
+@flash.get("success").getOrElse("")
+
+@form(routes.OrderController.saveAddedOrder()) {
+    @helper.CSRF.formField
+    @inputText(order("reference"))
+
+    <div class="buttons">
+        <input type="submit" value="Add Order"/>
+    </div>
+}

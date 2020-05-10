@@ -63,7 +63,7 @@ CREATE TABLE "client"
 CREATE TABLE "cart"
 (
     "id"    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "value" NUMERIC
+    "value" INT
 );
 
 CREATE TABLE "cart_products"
