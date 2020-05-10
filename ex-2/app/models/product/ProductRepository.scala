@@ -24,7 +24,7 @@ class ProductRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
     def description = column[String]("description")
     def category = column[Long]("category")
     def producer = column[Long]("producer")
-    def price = column[Double]("price")
+    def price = column[Int]("price")
 
     def category_fk = foreignKey("category_fk", category, categories)(_.id)
     def producer_fk = foreignKey("producer_fk", producer, producers)(_.id)
@@ -39,7 +39,7 @@ class ProductRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
   private val categories = TableQuery[CategoryTable]
   private val producers = TableQuery[ProducerTable]
 
-  def create(name: String, description: String, category: Long, producer: Long, price: Double): Future[Product] = db.run {
+  def create(name: String, description: String, category: Long, producer: Long, price: Int): Future[Product] = db.run {
     (products.map(p => (p.name, p.description, p.category, p.producer, p.price))
       returning products.map(_.id)
       into { case ((name, description, category, producer, price), id) => Product(id, name, description, category, producer, price) }

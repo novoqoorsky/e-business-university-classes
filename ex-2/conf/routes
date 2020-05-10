@@ -1,12 +1,11 @@
-GET           /                           controllers.HomeController.index
+GET         /                           controllers.HomeController.index
 
-GET           /add-product                controllers.ProductController.addProduct
-POST          /added-product              controllers.ProductController.saveAddedProduct
-GET           /update-product/:id         controllers.ProductController.updateProduct(id: Long)
-PATCH         /updated-product            controllers.ProductController.saveUpdatedProduct
-GET           /delete-product/:id         controllers.ProductController.deleteProduct(id: Long)
-DELETE        /deleted-product            controllers.ProductController.saveDeletedProduct
-GET           /display-product/:id        controllers.ProductController.displayProduct(id: Long)
-GET           /display-products           controllers.ProductController.displayProducts
+GET         /add-product                controllers.ProductController.addProduct
+POST        /added-product              controllers.ProductController.saveAddedProduct
+GET         /update-product/:id         controllers.ProductController.updateProduct(id: Long)
+POST         /updated-product            controllers.ProductController.saveUpdatedProduct
+GET         /delete-product/:id         controllers.ProductController.deleteProduct(id: Long)
+GET         /display-product/:id        controllers.ProductController.displayProduct(id: Long)
+GET         /display-products           controllers.ProductController.displayProducts
 
-GET           /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

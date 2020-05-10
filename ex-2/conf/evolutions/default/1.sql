@@ -13,7 +13,7 @@ CREATE TABLE "product"
     "description" TEXT    NOT NULL,
     "category"    INT     NOT NULL,
     "producer"    INT     NOT NULL,
-    "price"       NUMERIC,
+    "price"       INT     NOT NULL,
 
     FOREIGN KEY (category) REFERENCES category (id),
     FOREIGN KEY (producer) REFERENCES category (id)
