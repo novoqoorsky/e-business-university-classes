@@ -6,6 +6,7 @@ import models.producer.{Producer, ProducerRepository}
 import models.product.{Product, ProductRepository}
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -123,6 +124,16 @@ class ProductController @Inject()(productRepository: ProductRepository,
       case Success(p) => producers = p
       case Failure(_) => print("Failure on retrieving products")
     }
+  }
+
+  // REACT
+
+  def product(): Action[AnyContent] = Action { implicit request =>
+    Ok("2137")
+  }
+
+  def products(): Action[AnyContent] = Action.async { implicit request =>
+    productRepository.list().map(products => Ok(Json.toJson(products)))
   }
 }
 

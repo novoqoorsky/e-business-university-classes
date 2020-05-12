@@ -8,6 +8,9 @@ GET         /delete-product/:id          controllers.ProductController.deletePro
 GET         /display-product/:id         controllers.ProductController.displayProduct(id: Long)
 GET         /display-products            controllers.ProductController.displayProducts
 
+GET         /products                    controllers.ProductController.products
+POST        /product                     controllers.ProductController.product
+
 GET         /add-address                 controllers.AddressController.addAddress
 POST        /added-address               controllers.AddressController.saveAddedAddress
 GET         /update-address/:id          controllers.AddressController.updateAddress(id: Long)
