@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 
 class Products extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -23,32 +23,38 @@ class Products extends Component {
             },
             body: JSON.stringify(object),
         });
+
+        this.props.history.push('/products/');
     }
 
     render() {
+
         return (
-            <form onSubmit={this.handleSubmit}>
-                <label htmlFor="name">Product name</label>
-                <input id="name" name="name" type="text" />
+            <div className="content" style={{position:"absolute", left:"30px", top:"50px"}}>
+                <form onSubmit={this.handleSubmit} class="pure-form pure-form-stacked">
 
-                <label htmlFor="description">Description</label>
-                <input id="description" name="description" type="description" />
+                    <label htmlFor="name">Name</label>
+                    <input id="name" name="name" type="text" />
 
-                <label htmlFor="category">Category</label>
-                <input id="category" name="category" type="category" />
+                    <label htmlFor="description">Description</label>
+                    <input id="description" name="description" type="text" />
 
-                <label htmlFor="producer">Producer</label>
-                <input id="producer" name="producer" type="producer" />
+                    <label htmlFor="category">Category</label>
+                    <input id="category" name="category" type="text" />
 
-                <label htmlFor="price">Price</label>
-                <input id="price" name="price" type="price" />
+                    <label htmlFor="producer">Producer</label>
+                    <input id="producer" name="producer" type="text" />
 
-                <button>Add product</button>
-            </form>
+                    <label htmlFor="price">Price</label>
+                    <input id="price" name="price" type="number" />
+
+                    <br/>
+                    <button class="pure-button pure-button-primary">Add product</button>
+                </form>
+            </div>
         );
     }
 
 }
-
 
 export default Products;
