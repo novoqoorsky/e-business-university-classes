@@ -6,6 +6,7 @@ import models.cart.{Cart, CartRepository}
 import models.client.{Client, ClientRepository}
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -121,6 +122,42 @@ class ClientController @Inject()(clientRepository: ClientRepository,
       case Success(c) => carts = c
       case Failure(_) => print("Failure on retrieving carts")
     }
+  }
+
+  // REACT
+
+  def clients(): Action[AnyContent] = Action.async {
+    clientRepository.list().map(clients => Ok(Json.toJson(clients)))
+  }
+
+  def postClient(): Action[AnyContent] = Action { implicit request =>
+    val c = request.body.asJson.get.asInstanceOf[JsObject].value
+    clientRepository.create(
+      c("name").asInstanceOf[JsString].value,
+      c("lastName").asInstanceOf[JsString].value,
+      c("address").asInstanceOf[JsString].value.toLong,
+      c("cart").asInstanceOf[JsString].value.toLong
+    )
+    Created("Client created")
+  }
+
+  def putClient(): Action[AnyContent] = Action { implicit request =>
+    val c = request.body.asJson.get.asInstanceOf[JsObject].value
+    val id = c("id").asInstanceOf[JsString].value.toLong
+    val client = Client(
+      id,
+      c("name").asInstanceOf[JsString].value,
+      c("lastName").asInstanceOf[JsString].value,
+      c("address").asInstanceOf[JsString].value.toLong,
+      c("cart").asInstanceOf[JsString].value.toLong
+    )
+    clientRepository.update(id, client)
+    Created(Json.toJson(client))
+  }
+
+  def deleteClientExternal(id: Long): Action[AnyContent] = Action { implicit request =>
+    deleteClient(id)
+    Ok("Cart deleted")
   }
 }
 

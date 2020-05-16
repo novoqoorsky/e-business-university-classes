@@ -4,6 +4,7 @@ import javax.inject.{Inject, Singleton}
 import models.order.{Order, OrderRepository}
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -85,6 +86,36 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
         }
       }
     )
+  }
+
+  // REACT
+
+  def orders(): Action[AnyContent] = Action.async {
+    orderRepository.list().map(orders => Ok(Json.toJson(orders)))
+  }
+
+  def postOrder(): Action[AnyContent] = Action { implicit request =>
+    val o = request.body.asJson.get.asInstanceOf[JsObject].value
+    orderRepository.create(
+      o("reference").asInstanceOf[JsString].value
+    )
+    Created("Order created")
+  }
+
+  def putOrder(): Action[AnyContent] = Action { implicit request =>
+    val o = request.body.asJson.get.asInstanceOf[JsObject].value
+    val id = o("id").asInstanceOf[JsString].value.toLong
+    val order = Order(
+      id,
+      o("reference").asInstanceOf[JsString].value
+    )
+    orderRepository.update(id, order)
+    Created(Json.toJson(order))
+  }
+
+  def deleteOrderExternal(id: Long): Action[AnyContent] = Action { implicit request =>
+    deleteOrder(id)
+    Ok("Cart deleted")
   }
 }
 

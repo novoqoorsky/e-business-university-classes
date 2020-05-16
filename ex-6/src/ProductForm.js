@@ -10,12 +10,18 @@ class Products extends Component {
     handleSubmit(event) {
         event.preventDefault();
         const data = new FormData(event.target);
+        var object = {}
+        data.forEach((value, key) => {object[key] = value});
 
         var url = 'http://localhost:9000/product';
 
         fetch(url, {
             method: 'POST',
-            body: data,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(object),
         });
     }
 
@@ -27,6 +33,15 @@ class Products extends Component {
 
                 <label htmlFor="description">Description</label>
                 <input id="description" name="description" type="description" />
+
+                <label htmlFor="category">Category</label>
+                <input id="category" name="category" type="category" />
+
+                <label htmlFor="producer">Producer</label>
+                <input id="producer" name="producer" type="producer" />
+
+                <label htmlFor="price">Price</label>
+                <input id="price" name="price" type="price" />
 
                 <button>Add product</button>
             </form>

@@ -5,6 +5,7 @@ import models.discount.{Discount, DiscountRepository}
 import models.product.{Product, ProductRepository}
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -108,6 +109,38 @@ class DiscountController @Inject()(discountRepository: DiscountRepository,
       case Success(p) => products = p
       case Failure(_) => print("Failure on retrieving products for discount")
     }
+  }
+
+  // REACT
+
+  def discounts(): Action[AnyContent] = Action.async {
+    discountRepository.list().map(discounts => Ok(Json.toJson(discounts)))
+  }
+
+  def postDiscount(): Action[AnyContent] = Action { implicit request =>
+    val d = request.body.asJson.get.asInstanceOf[JsObject].value
+    discountRepository.create(
+      d("product").asInstanceOf[JsString].value.toLong,
+      d("percentage").asInstanceOf[JsString].value.toInt
+    )
+    Created("Discount created")
+  }
+
+  def putDiscount(): Action[AnyContent] = Action { implicit request =>
+    val d = request.body.asJson.get.asInstanceOf[JsObject].value
+    val id = d("id").asInstanceOf[JsString].value.toLong
+    val discount = Discount(
+      id,
+      d("product").asInstanceOf[JsString].value.toLong,
+      d("percentage").asInstanceOf[JsString].value.toInt
+    )
+    discountRepository.update(id, discount)
+    Created(Json.toJson(discount))
+  }
+
+  def deleteDiscountExternal(id: Long): Action[AnyContent] = Action { implicit request =>
+    deleteDiscount(id)
+    Ok("Cart deleted")
   }
 }
 

@@ -4,6 +4,7 @@ import javax.inject.{Inject, Singleton}
 import models.cart.{Cart, CartRepository}
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -85,6 +86,36 @@ class CartController @Inject()(cartRepository: CartRepository, messagesControlle
         }
       }
     )
+  }
+
+  // REACT
+
+  def carts(): Action[AnyContent] = Action.async {
+    cartRepository.list().map(carts => Ok(Json.toJson(carts)))
+  }
+
+  def postCart(): Action[AnyContent] = Action { implicit request =>
+    val c = request.body.asJson.get.asInstanceOf[JsObject].value
+    cartRepository.create(
+      c("value").asInstanceOf[JsString].value.toInt
+    )
+    Created("Cart created")
+  }
+
+  def putCart(): Action[AnyContent] = Action { implicit request =>
+    val c = request.body.asJson.get.asInstanceOf[JsObject].value
+    val id = c("id").asInstanceOf[JsString].value.toLong
+    val cart = Cart(
+      id,
+      c("value").asInstanceOf[JsString].value.toInt
+    )
+    cartRepository.update(id, cart)
+    Created(Json.toJson(cart))
+  }
+
+  def deleteCartExternal(id: Long): Action[AnyContent] = Action { implicit request =>
+    deleteCart(id)
+    Ok("Cart deleted")
   }
 }
 

@@ -6,7 +6,7 @@ import models.producer.{Producer, ProducerRepository}
 import models.product.{Product, ProductRepository}
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -128,12 +128,40 @@ class ProductController @Inject()(productRepository: ProductRepository,
 
   // REACT
 
-  def product(): Action[AnyContent] = Action { implicit request =>
-    Ok("2137")
+  def products(): Action[AnyContent] = Action.async {
+    productRepository.list().map(products => Ok(Json.toJson(products)))
   }
 
-  def products(): Action[AnyContent] = Action.async { implicit request =>
-    productRepository.list().map(products => Ok(Json.toJson(products)))
+  def postProduct(): Action[AnyContent] = Action { implicit request =>
+    val p = request.body.asJson.get.asInstanceOf[JsObject].value
+    productRepository.create(
+      p("name").asInstanceOf[JsString].value,
+      p("description").asInstanceOf[JsString].value,
+      p("category").asInstanceOf[JsString].value.toLong,
+      p("producer").asInstanceOf[JsString].value.toLong,
+      p("price").asInstanceOf[JsString].value.toInt
+    )
+    Created("Product created")
+  }
+
+  def putProduct(): Action[AnyContent] = Action { implicit request =>
+    val p = request.body.asJson.get.asInstanceOf[JsObject].value
+    val id = p("id").asInstanceOf[JsString].value.toLong
+    val product = Product(
+      id,
+      p("name").asInstanceOf[JsString].value,
+      p("description").asInstanceOf[JsString].value,
+      p("category").asInstanceOf[JsString].value.toLong,
+      p("producer").asInstanceOf[JsString].value.toLong,
+      p("price").asInstanceOf[JsString].value.toInt
+    )
+    productRepository.update(id, product)
+    Created(Json.toJson(product))
+  }
+
+  def deleteProductExternal(id: Long): Action[AnyContent] = Action { implicit request =>
+    deleteProduct(id)
+    Ok("Product deleted")
   }
 }
 

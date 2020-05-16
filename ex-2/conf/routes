@@ -1,79 +1,120 @@
-GET         /                            controllers.HomeController.index
+GET           /                            controllers.HomeController.index
 
-GET         /add-product                 controllers.ProductController.addProduct
-POST        /added-product               controllers.ProductController.saveAddedProduct
-GET         /update-product/:id          controllers.ProductController.updateProduct(id: Long)
-POST        /updated-product             controllers.ProductController.saveUpdatedProduct
-GET         /delete-product/:id          controllers.ProductController.deleteProduct(id: Long)
-GET         /display-product/:id         controllers.ProductController.displayProduct(id: Long)
-GET         /display-products            controllers.ProductController.displayProducts
+GET           /add-product                 controllers.ProductController.addProduct
+POST          /added-product               controllers.ProductController.saveAddedProduct
+GET           /update-product/:id          controllers.ProductController.updateProduct(id: Long)
+POST          /updated-product             controllers.ProductController.saveUpdatedProduct
+GET           /delete-product/:id          controllers.ProductController.deleteProduct(id: Long)
+GET           /display-product/:id         controllers.ProductController.displayProduct(id: Long)
+GET           /display-products            controllers.ProductController.displayProducts
 
-GET         /products                    controllers.ProductController.products
-POST        /product                     controllers.ProductController.product
+GET           /products                    controllers.ProductController.products
+POST          /product                     controllers.ProductController.postProduct
+PUT           /product                     controllers.ProductController.putProduct
+DELETE        /product/:id                 controllers.ProductController.deleteProductExternal(id: Long)
 
-GET         /add-address                 controllers.AddressController.addAddress
-POST        /added-address               controllers.AddressController.saveAddedAddress
-GET         /update-address/:id          controllers.AddressController.updateAddress(id: Long)
-POST        /updated-address             controllers.AddressController.saveUpdatedAddress
-GET         /delete-address/:id          controllers.AddressController.deleteAddress(id: Long)
-GET         /display-address/:id         controllers.AddressController.displayAddress(id: Long)
-GET         /display-addresses           controllers.AddressController.displayAddresses
+GET           /add-address                 controllers.AddressController.addAddress
+POST          /added-address               controllers.AddressController.saveAddedAddress
+GET           /update-address/:id          controllers.AddressController.updateAddress(id: Long)
+POST          /updated-address             controllers.AddressController.saveUpdatedAddress
+GET           /delete-address/:id          controllers.AddressController.deleteAddress(id: Long)
+GET           /display-address/:id         controllers.AddressController.displayAddress(id: Long)
+GET           /display-addresses           controllers.AddressController.displayAddresses
 
-GET         /add-cart                    controllers.CartController.addCart
-POST        /added-cart                  controllers.CartController.saveAddedCart
-GET         /update-cart/:id             controllers.CartController.updateCart(id: Long)
-POST        /updated-cart                controllers.CartController.saveUpdatedCart
-GET         /delete-cart/:id             controllers.CartController.deleteCart(id: Long)
-GET         /display-cart/:id            controllers.CartController.displayCart(id: Long)
-GET         /display-carts               controllers.CartController.displayCarts
+GET           /addresses                   controllers.AddressController.addresses
+POST          /address                     controllers.AddressController.postAddress
+PUT           /address                     controllers.AddressController.putAddress
+DELETE        /address/:id                 controllers.AddressController.deleteAddressExternal(id: Long)
 
-GET         /add-category                controllers.CategoryController.addCategory
-POST        /added-category              controllers.CategoryController.saveAddedCategory
-GET         /update-category/:id         controllers.CategoryController.updateCategory(id: Long)
-POST        /updated-category            controllers.CategoryController.saveUpdatedCategory
-GET         /delete-category/:id         controllers.CategoryController.deleteCategory(id: Long)
-GET         /display-category/:id        controllers.CategoryController.displayCategory(id: Long)
-GET         /display-categories          controllers.CategoryController.displayCategories
+GET           /add-cart                    controllers.CartController.addCart
+POST          /added-cart                  controllers.CartController.saveAddedCart
+GET           /update-cart/:id             controllers.CartController.updateCart(id: Long)
+POST          /updated-cart                controllers.CartController.saveUpdatedCart
+GET           /delete-cart/:id             controllers.CartController.deleteCart(id: Long)
+GET           /display-cart/:id            controllers.CartController.displayCart(id: Long)
+GET           /display-carts               controllers.CartController.displayCarts
 
-GET         /add-order                   controllers.OrderController.addOrder
-POST        /added-order                 controllers.OrderController.saveAddedOrder
-GET         /update-order/:id            controllers.OrderController.updateOrder(id: Long)
-POST        /updated-order               controllers.OrderController.saveUpdatedOrder
-GET         /delete-order/:id            controllers.OrderController.deleteOrder(id: Long)
-GET         /display-order/:id           controllers.OrderController.displayOrder(id: Long)
-GET         /display-orders              controllers.OrderController.displayOrders
+GET           /carts                       controllers.CartController.carts
+POST          /cart                        controllers.CartController.postCart
+PUT           /cart                        controllers.CartController.putCart
+DELETE        /cart/:id                    controllers.CartController.deleteCartExternal(id: Long)
 
-GET         /add-client                  controllers.ClientController.addClient
-POST        /added-client                controllers.ClientController.saveAddedClient
-GET         /update-client/:id           controllers.ClientController.updateClient(id: Long)
-POST        /updated-client              controllers.ClientController.saveUpdatedClient
-GET         /delete-client/:id           controllers.ClientController.deleteClient(id: Long)
-GET         /display-client/:id          controllers.ClientController.displayClient(id: Long)
-GET         /display-clients             controllers.ClientController.displayClients
+GET           /add-category                controllers.CategoryController.addCategory
+POST          /added-category              controllers.CategoryController.saveAddedCategory
+GET           /update-category/:id         controllers.CategoryController.updateCategory(id: Long)
+POST          /updated-category            controllers.CategoryController.saveUpdatedCategory
+GET           /delete-category/:id         controllers.CategoryController.deleteCategory(id: Long)
+GET           /display-category/:id        controllers.CategoryController.displayCategory(id: Long)
+GET           /display-categories          controllers.CategoryController.displayCategories
 
-GET         /add-discount                controllers.DiscountController.addDiscount
-POST        /added-discount              controllers.DiscountController.saveAddedDiscount
-GET         /update-discount/:id         controllers.DiscountController.updateDiscount(id: Long)
-POST        /updated-discount            controllers.DiscountController.saveUpdatedDiscount
-GET         /delete-discount/:id         controllers.DiscountController.deleteDiscount(id: Long)
-GET         /display-discount/:id        controllers.DiscountController.displayDiscount(id: Long)
-GET         /display-discounts           controllers.DiscountController.displayDiscounts
+GET           /categories                  controllers.CategoryController.categories
+POST          /category                    controllers.CategoryController.postCategory
+PUT           /category                    controllers.CategoryController.putCategory
+DELETE        /category/:id                controllers.CategoryController.deleteCategoryExternal(id: Long)
 
-GET         /add-producer                controllers.ProducerController.addProducer
-POST        /added-producer              controllers.ProducerController.saveAddedProducer
-GET         /update-producer/:id         controllers.ProducerController.updateProducer(id: Long)
-POST        /updated-producer            controllers.ProducerController.saveUpdatedProducer
-GET         /delete-producer/:id         controllers.ProducerController.deleteProducer(id: Long)
-GET         /display-producer/:id        controllers.ProducerController.displayProducer(id: Long)
-GET         /display-producers           controllers.ProducerController.displayProducers
+GET           /add-order                   controllers.OrderController.addOrder
+POST          /added-order                 controllers.OrderController.saveAddedOrder
+GET           /update-order/:id            controllers.OrderController.updateOrder(id: Long)
+POST          /updated-order               controllers.OrderController.saveUpdatedOrder
+GET           /delete-order/:id            controllers.OrderController.deleteOrder(id: Long)
+GET           /display-order/:id           controllers.OrderController.displayOrder(id: Long)
+GET           /display-orders              controllers.OrderController.displayOrders
 
-GET         /add-user                    controllers.UserController.addUser
-POST        /added-user                  controllers.UserController.saveAddedUser
-GET         /update-user/:id             controllers.UserController.updateUser(id: Long)
-POST        /updated-user                controllers.UserController.saveUpdatedUser
-GET         /delete-user/:id             controllers.UserController.deleteUser(id: Long)
-GET         /display-user/:id            controllers.UserController.displayUser(id: Long)
-GET         /display-users               controllers.UserController.displayUsers
+GET           /orders                      controllers.OrderController.orders
+POST          /order                       controllers.OrderController.postOrder
+PUT           /order                       controllers.OrderController.putOrder
+DELETE        /order/:id                   controllers.OrderController.deleteOrderExternal(id: Long)
 
+GET           /add-client                  controllers.ClientController.addClient
+POST          /added-client                controllers.ClientController.saveAddedClient
+GET           /update-client/:id           controllers.ClientController.updateClient(id: Long)
+POST          /updated-client              controllers.ClientController.saveUpdatedClient
+GET           /delete-client/:id           controllers.ClientController.deleteClient(id: Long)
+GET           /display-client/:id          controllers.ClientController.displayClient(id: Long)
+GET           /display-clients             controllers.ClientController.displayClients
 
-GET         /assets/*file                controllers.Assets.versioned(path="/public", file: Asset)
+GET           /clients                     controllers.ClientController.clients
+POST          /client                      controllers.ClientController.postClient
+PUT           /client                      controllers.ClientController.putClient
+DELETE        /client/:id                  controllers.ClientController.deleteClientExternal(id: Long)
+
+GET           /add-discount                controllers.DiscountController.addDiscount
+POST          /added-discount              controllers.DiscountController.saveAddedDiscount
+GET           /update-discount/:id         controllers.DiscountController.updateDiscount(id: Long)
+POST          /updated-discount            controllers.DiscountController.saveUpdatedDiscount
+GET           /delete-discount/:id         controllers.DiscountController.deleteDiscount(id: Long)
+GET           /display-discount/:id        controllers.DiscountController.displayDiscount(id: Long)
+GET           /display-discounts           controllers.DiscountController.displayDiscounts
+
+GET           /discounts                   controllers.DiscountController.discounts
+POST          /discount                    controllers.DiscountController.postDiscount
+PUT           /discount                    controllers.DiscountController.putDiscount
+DELETE        /discount/:id                controllers.DiscountController.deleteDiscountExternal(id: Long)
+
+GET           /add-producer                controllers.ProducerController.addProducer
+POST          /added-producer              controllers.ProducerController.saveAddedProducer
+GET           /update-producer/:id         controllers.ProducerController.updateProducer(id: Long)
+POST          /updated-producer            controllers.ProducerController.saveUpdatedProducer
+GET           /delete-producer/:id         controllers.ProducerController.deleteProducer(id: Long)
+GET           /display-producer/:id        controllers.ProducerController.displayProducer(id: Long)
+GET           /display-producers           controllers.ProducerController.displayProducers
+
+GET           /producers                   controllers.ProducerController.producers
+POST          /producer                    controllers.ProducerController.postProducer
+PUT           /producer                    controllers.ProducerController.putProducer
+DELETE        /producer/:id                controllers.ProducerController.deleteProducerExternal(id: Long)
+
+GET           /add-user                    controllers.UserController.addUser
+POST          /added-user                  controllers.UserController.saveAddedUser
+GET           /update-user/:id             controllers.UserController.updateUser(id: Long)
+POST          /updated-user                controllers.UserController.saveUpdatedUser
+GET           /delete-user/:id             controllers.UserController.deleteUser(id: Long)
+GET           /display-user/:id            controllers.UserController.displayUser(id: Long)
+GET           /display-users               controllers.UserController.displayUsers
+
+GET           /users                       controllers.UserController.users
+POST          /user                        controllers.UserController.postUser
+PUT           /user                        controllers.UserController.putUser
+DELETE        /user/:id                    controllers.UserController.deleteUserExternal(id: Long)
+
+GET           /assets/*file                controllers.Assets.versioned(path="/public", file: Asset)

@@ -4,6 +4,7 @@ import javax.inject.{Inject, Singleton}
 import models.category.{Category, CategoryRepository}
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -85,6 +86,36 @@ class CategoryController @Inject()(categoryRepository: CategoryRepository, messa
         }
       }
     )
+  }
+
+  // REACT
+
+  def categories(): Action[AnyContent] = Action.async {
+    categoryRepository.list().map(categories => Ok(Json.toJson(categories)))
+  }
+
+  def postCategory(): Action[AnyContent] = Action { implicit request =>
+    val c = request.body.asJson.get.asInstanceOf[JsObject].value
+    categoryRepository.create(
+      c("name").asInstanceOf[JsString].value
+    )
+    Created("Category created")
+  }
+
+  def putCategory(): Action[AnyContent] = Action { implicit request =>
+    val c = request.body.asJson.get.asInstanceOf[JsObject].value
+    val id = c("id").asInstanceOf[JsString].value.toLong
+    val category = Category(
+      id,
+      c("name").asInstanceOf[JsString].value
+    )
+    categoryRepository.update(id, category)
+    Created(Json.toJson(category))
+  }
+
+  def deleteCategoryExternal(id: Long): Action[AnyContent] = Action { implicit request =>
+    deleteCategory(id)
+    Ok("Cart deleted")
   }
 }
 

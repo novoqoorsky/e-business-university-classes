@@ -5,6 +5,7 @@ import models.address.{Address, AddressRepository}
 import models.producer.{Producer, ProducerRepository}
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +36,6 @@ class ProducerController @Inject()(producerRepository: ProducerRepository,
 
   def addProducer(): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
     val fAddresses = addressRepository.list()
-    val fProducers = producerRepository.list()
 
     for {
       addresses <- fAddresses
@@ -109,6 +109,38 @@ class ProducerController @Inject()(producerRepository: ProducerRepository,
       case Success(a) => addresses = a
       case Failure(_) => print("Failure on retrieving addresses for producers")
     }
+  }
+
+  // REACT
+
+  def producers(): Action[AnyContent] = Action.async {
+    producerRepository.list().map(producers => Ok(Json.toJson(producers)))
+  }
+
+  def postProducer(): Action[AnyContent] = Action { implicit request =>
+    val p = request.body.asJson.get.asInstanceOf[JsObject].value
+    producerRepository.create(
+      p("name").asInstanceOf[JsString].value,
+      p("address").asInstanceOf[JsString].value.toLong
+    )
+    Created("Producer created")
+  }
+
+  def putProducer(): Action[AnyContent] = Action { implicit request =>
+    val p = request.body.asJson.get.asInstanceOf[JsObject].value
+    val id = p("id").asInstanceOf[JsString].value.toLong
+    val producer = Producer(
+      id,
+      p("name").asInstanceOf[JsString].value,
+      p("address").asInstanceOf[JsString].value.toLong
+    )
+    producerRepository.update(id, producer)
+    Created(Json.toJson(producer))
+  }
+
+  def deleteProducerExternal(id: Long): Action[AnyContent] = Action { implicit request =>
+    deleteProducer(id)
+    Ok("Cart deleted")
   }
 }
 

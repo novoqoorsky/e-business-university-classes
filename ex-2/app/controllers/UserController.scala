@@ -5,6 +5,7 @@ import models.client.{Client, ClientRepository}
 import models.user.{User, UserRepository}
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -112,6 +113,42 @@ class UserController @Inject()(userRepository: UserRepository,
       case Success(c) => clients = c
       case Failure(_) => print("Failure on retrieving clients")
     }
+  }
+
+  // REACT
+
+  def users(): Action[AnyContent] = Action.async {
+    userRepository.list().map(users => Ok(Json.toJson(users)))
+  }
+
+  def postUser(): Action[AnyContent] = Action { implicit request =>
+    val u = request.body.asJson.get.asInstanceOf[JsObject].value
+    userRepository.create(
+      u("userName").asInstanceOf[JsString].value,
+      u("password").asInstanceOf[JsString].value,
+      u("email").asInstanceOf[JsString].value,
+      u("client").asInstanceOf[JsString].value.toLong
+    )
+    Created("User created")
+  }
+
+  def putUser(): Action[AnyContent] = Action { implicit request =>
+    val u = request.body.asJson.get.asInstanceOf[JsObject].value
+    val id = u("id").asInstanceOf[JsString].value.toLong
+    val user = User(
+      id,
+      u("userName").asInstanceOf[JsString].value,
+      u("password").asInstanceOf[JsString].value,
+      u("email").asInstanceOf[JsString].value,
+      u("client").asInstanceOf[JsString].value.toLong
+    )
+    userRepository.update(id, user)
+    Created(Json.toJson(user))
+  }
+
+  def deleteUserExternal(id: Long): Action[AnyContent] = Action { implicit request =>
+    deleteUser(id)
+    Ok("Cart deleted")
   }
 }
 
