@@ -19,6 +19,8 @@ class ClientController @Inject()(clientRepository: ClientRepository,
                                  messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
+  val DISPLAY_CLIENTS_URL = "/display-clients"
+
   var addresses: Seq[Address] = Seq[Address]()
   var carts: Seq[Cart] = Seq[Cart]()
 
@@ -63,7 +65,7 @@ class ClientController @Inject()(clientRepository: ClientRepository,
 
   def deleteClient(id: Long): Action[AnyContent] = Action {
     clientRepository.delete(id)
-    Redirect("/display-clients")
+    Redirect(DISPLAY_CLIENTS_URL)
   }
 
   def displayClient(id: Long): Action[AnyContent] = Action.async { implicit request =>
@@ -89,7 +91,7 @@ class ClientController @Inject()(clientRepository: ClientRepository,
       client => {
         clientRepository.create(client.name, client.lastName, client.address, client.cart).map { _ =>
           routes.ClientController.addClient()
-          Redirect("/display-clients")
+          Redirect(DISPLAY_CLIENTS_URL)
         }
       }
     )
@@ -107,7 +109,7 @@ class ClientController @Inject()(clientRepository: ClientRepository,
       client => {
         clientRepository.update(client.id, Client(client.id, client.name, client.lastName, client.address, client.cart)).map { _ =>
           routes.ClientController.updateClient(client.id)
-          Redirect("/display-clients")
+          Redirect(DISPLAY_CLIENTS_URL)
         }
       }
     )

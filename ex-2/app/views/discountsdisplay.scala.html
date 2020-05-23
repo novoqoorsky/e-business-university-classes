@@ -5,7 +5,7 @@
 
 @for(discount <- discounts) {
     <p>
-        <b>@discount.id</b><b>.</b>
+        <strong>@discount.id</strong><strong>.</strong>
         @discount.product
         @discount.percentage %
         <a href="@controllers.routes.DiscountController.updateDiscount(discount.id)">Edit</a>

@@ -19,6 +19,8 @@ class ProductController @Inject()(productRepository: ProductRepository,
                                   messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
+  val DISPLAY_PRODUCTS_URL = "/display-products"
+
   var categories: Seq[Category] = Seq[Category]()
   var producers: Seq[Producer] = Seq[Producer]()
 
@@ -65,7 +67,7 @@ class ProductController @Inject()(productRepository: ProductRepository,
 
   def deleteProduct(id: Long): Action[AnyContent] = Action {
     productRepository.delete(id)
-    Redirect("/display-products")
+    Redirect(DISPLAY_PRODUCTS_URL)
   }
 
   def displayProduct(id: Long): Action[AnyContent] = Action.async { implicit request =>
@@ -91,7 +93,7 @@ class ProductController @Inject()(productRepository: ProductRepository,
       product => {
         productRepository.create(product.name, product.description, product.category, product.producer, product.price).map { _ =>
           routes.ProductController.addProduct()
-          Redirect("/display-products")
+          Redirect(DISPLAY_PRODUCTS_URL)
         }
       }
     )
@@ -109,7 +111,7 @@ class ProductController @Inject()(productRepository: ProductRepository,
       product => {
         productRepository.update(product.id, Product(product.id, product.name, product.description, product.category, product.producer, product.price)).map { _ =>
           routes.ProductController.updateProduct(product.id)
-          Redirect("/display-products")
+          Redirect(DISPLAY_PRODUCTS_URL)
         }
       }
     )

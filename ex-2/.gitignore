@@ -3,6 +3,7 @@
 .idea_modules/
 *.iws
 *.iml
+.scannerwork
 
 target
 project/target

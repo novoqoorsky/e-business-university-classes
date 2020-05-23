@@ -5,8 +5,8 @@
 
 @for(user <- users) {
     <p>
-        <b>@user.id</b><b>.</b>
-        <b>@user.userName</b>
+        <strong>@user.id</strong><strong>.</strong>
+        <strong>@user.userName</strong>
         @user.email
         @user.password
         <a href="@controllers.routes.UserController.updateUser(user.id)">Edit</a>

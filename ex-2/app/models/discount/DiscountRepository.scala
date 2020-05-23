@@ -20,7 +20,7 @@ class DiscountRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, va
     def product = column[Long]("product")
     def percentage = column[Int]("percentage")
 
-    def product_fk = foreignKey("product_fk", product, products)(_.id)
+    def productFk = foreignKey("product_fk", product, products)(_.id)
 
     def * = (id, product, percentage) <> ((Discount.apply _).tupled, Discount.unapply)
   }

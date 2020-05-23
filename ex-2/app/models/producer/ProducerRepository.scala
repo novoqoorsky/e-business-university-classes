@@ -20,7 +20,7 @@ class ProducerRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, va
     def name = column[String]("name")
     def address = column[Long]("address")
 
-    def address_fk = foreignKey("address_fk", address, addresses)(_.id)
+    def addressFk = foreignKey("address_fk", address, addresses)(_.id)
 
     def * = (id, name, address) <> ((Producer.apply _).tupled, Producer.unapply)
   }

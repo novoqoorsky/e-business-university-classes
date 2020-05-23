@@ -14,6 +14,8 @@ class AddressController @Inject()(addressRepository: AddressRepository,
                                   messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
+  val DISPLAY_ADDRESSES_URL = "/display-addresses"
+
   val addressForm: Form[CreateAddressForm] = Form {
     mapping(
       "city" -> nonEmptyText,
@@ -48,7 +50,7 @@ class AddressController @Inject()(addressRepository: AddressRepository,
 
   def deleteAddress(id: Long): Action[AnyContent] = Action {
     addressRepository.delete(id)
-    Redirect("/display-addresses")
+    Redirect(DISPLAY_ADDRESSES_URL)
   }
 
   def displayAddress(id: Long): Action[AnyContent] = Action.async { implicit request =>
@@ -73,7 +75,7 @@ class AddressController @Inject()(addressRepository: AddressRepository,
       address => {
         addressRepository.create(address.city, address.streetName, address.houseNumber, address.postalCode).map { _ =>
           routes.AddressController.addAddress()
-          Redirect("/display-addresses")
+          Redirect(DISPLAY_ADDRESSES_URL)
         }
       }
     )
@@ -89,7 +91,7 @@ class AddressController @Inject()(addressRepository: AddressRepository,
       address => {
         addressRepository.update(address.id, Address(address.id, address.city, address.streetName, address.houseNumber, address.postalCode)).map { _ =>
           routes.AddressController.updateAddress(address.id)
-          Redirect("/display-addresses")
+          Redirect(DISPLAY_ADDRESSES_URL)
         }
       }
     )

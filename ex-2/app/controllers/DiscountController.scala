@@ -17,6 +17,8 @@ class DiscountController @Inject()(discountRepository: DiscountRepository,
                                   messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
+  val DISPLAY_DISCOUNTS_URL = "/display-discounts"
+
   var products: Seq[Product] = Seq[Product]()
 
   val discountForm: Form[CreateDiscountForm] = Form {
@@ -54,7 +56,7 @@ class DiscountController @Inject()(discountRepository: DiscountRepository,
 
   def deleteDiscount(id: Long): Action[AnyContent] = Action {
     discountRepository.delete(id)
-    Redirect("/display-discounts")
+    Redirect(DISPLAY_DISCOUNTS_URL)
   }
 
   def displayDiscount(id: Long): Action[AnyContent] = Action.async { implicit request =>
@@ -80,7 +82,7 @@ class DiscountController @Inject()(discountRepository: DiscountRepository,
       discount => {
         discountRepository.create(discount.product, discount.percentage).map { _ =>
           routes.DiscountController.addDiscount()
-          Redirect("/display-discounts")
+          Redirect(DISPLAY_DISCOUNTS_URL)
         }
       }
     )
@@ -98,7 +100,7 @@ class DiscountController @Inject()(discountRepository: DiscountRepository,
       discount => {
         discountRepository.update(discount.id, Discount(discount.id, discount.product, discount.percentage)).map { _ =>
           routes.DiscountController.updateDiscount(discount.id)
-          Redirect("/display-discounts")
+          Redirect(DISPLAY_DISCOUNTS_URL)
         }
       }
     )

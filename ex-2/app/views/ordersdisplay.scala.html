@@ -5,7 +5,7 @@
 
 @for(order <- orders) {
     <p>
-        <b>@order.id</b><b>.</b>
+        <strong>@order.id</strong><strong>.</strong>
         @order.reference
         <a href="@controllers.routes.OrderController.updateOrder(order.id)">Edit</a>
         <a href="@controllers.routes.OrderController.deleteOrder(order.id)">Delete</a>

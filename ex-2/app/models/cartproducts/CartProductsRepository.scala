@@ -23,8 +23,8 @@ class CartProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
     def cart = column[Long]("cart")
     def product = column[Long]("product")
 
-    def cart_fk = foreignKey("category_fk", cart, carts)(_.id)
-    def producer_fk = foreignKey("producer_fk", product, products)(_.id)
+    def cartFk = foreignKey("cart_fk", cart, carts)(_.id)
+    def producerFk = foreignKey("producer_fk", product, products)(_.id)
 
     def * = (id, cart, product) <> ((CartProducts.apply _).tupled, CartProducts.unapply)
   }
@@ -55,8 +55,8 @@ class CartProductsRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
     cartProducts.filter(_.id === id).result.headOption
   }
 
-  def getByCart(cart_id: Long): Future[Seq[CartProducts]] = db.run {
-    cartProducts.filter(_.cart === cart_id).result
+  def getByCart(cartId: Long): Future[Seq[CartProducts]] = db.run {
+    cartProducts.filter(_.cart === cartId).result
   }
 
   def delete(id: Long): Future[Unit] = db.run(cartProducts.filter(_.id === id).delete).map(_ => ())

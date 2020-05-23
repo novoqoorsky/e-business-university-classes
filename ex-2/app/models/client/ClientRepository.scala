@@ -25,7 +25,7 @@ class ClientRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
     def address = column[Long]("address")
     def cart = column[Long]("cart")
 
-    def address_fk = foreignKey("address_fk", address, addresses)(_.id)
+    def addressFk = foreignKey("address_fk", address, addresses)(_.id)
 
     def * = (id, name, lastName, address, cart) <> ((Client.apply _).tupled, Client.unapply)
   }

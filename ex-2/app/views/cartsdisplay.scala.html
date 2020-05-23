@@ -5,7 +5,7 @@
 
 @for(cart <- carts) {
     <p>
-        <b>@cart.id</b><b>.</b>
+        <strong>@cart.id</strong><strong>.</strong>
         @cart.value
         <a href="@controllers.routes.CartController.updateCart(cart.id)">Edit</a>
         <a href="@controllers.routes.CartController.deleteCart(cart.id)">Delete</a>

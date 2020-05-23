@@ -8,7 +8,7 @@ import Products from './Products'
 import ProductForm from './ProductForm'
 
 import './App.css';
-import SignUp from "./SignUpForm";
+import SignUpForm from "./SignUpForm";
 
 function App() {
     return <Router>
@@ -36,7 +36,7 @@ function App() {
 
                 <Route path="/products" component={Products}/>
                 <Route path="/productadd" component={ProductForm}/>
-                <Route path="/signup" component={SignUp}/>
+                <Route path="/signup" component={SignUpForm}/>
             </div>
         </div>
 

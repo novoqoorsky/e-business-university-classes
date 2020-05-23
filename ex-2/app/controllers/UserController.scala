@@ -17,6 +17,8 @@ class UserController @Inject()(userRepository: UserRepository,
                                   messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
+  val DISPLAY_USERS_URL = "/display-users"
+
   var clients: Seq[Client] = Seq[Client]()
 
   val userForm: Form[CreateUserForm] = Form {
@@ -58,7 +60,7 @@ class UserController @Inject()(userRepository: UserRepository,
 
   def deleteUser(id: Long): Action[AnyContent] = Action {
     userRepository.delete(id)
-    Redirect("/display-users")
+    Redirect(DISPLAY_USERS_URL)
   }
 
   def displayUser(id: Long): Action[AnyContent] = Action.async { implicit request =>
@@ -84,7 +86,7 @@ class UserController @Inject()(userRepository: UserRepository,
       user => {
         userRepository.create(user.userName, user.password, user.email, user.client).map { _ =>
           routes.UserController.addUser()
-          Redirect("/display-users")
+          Redirect(DISPLAY_USERS_URL)
         }
       }
     )
@@ -102,7 +104,7 @@ class UserController @Inject()(userRepository: UserRepository,
       user => {
         userRepository.update(user.id, User(user.id, user.userName, user.password, user.email, user.client)).map { _ =>
           routes.UserController.updateUser(user.id)
-          Redirect("/display-users")
+          Redirect(DISPLAY_USERS_URL)
         }
       }
     )

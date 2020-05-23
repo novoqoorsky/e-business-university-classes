@@ -17,6 +17,8 @@ class ProducerController @Inject()(producerRepository: ProducerRepository,
                                    messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
+  val DISPLAY_PRODUCERS_URL = "/display-producers"
+
   var addresses: Seq[Address] = Seq[Address]()
 
   val producerForm: Form[CreateProducerForm] = Form {
@@ -54,7 +56,7 @@ class ProducerController @Inject()(producerRepository: ProducerRepository,
 
   def deleteProducer(id: Long): Action[AnyContent] = Action {
     producerRepository.delete(id)
-    Redirect("/display-producers")
+    Redirect(DISPLAY_PRODUCERS_URL)
   }
 
   def displayProducer(id: Long): Action[AnyContent] = Action.async { implicit request =>
@@ -80,7 +82,7 @@ class ProducerController @Inject()(producerRepository: ProducerRepository,
       producer => {
         producerRepository.create(producer.name, producer.address).map { _ =>
           routes.ProducerController.addProducer()
-          Redirect("/display-producers")
+          Redirect(DISPLAY_PRODUCERS_URL)
         }
       }
     )
@@ -98,7 +100,7 @@ class ProducerController @Inject()(producerRepository: ProducerRepository,
       producer => {
         producerRepository.update(producer.id, Producer(producer.id, producer.name, producer.address)).map { _ =>
           routes.ProducerController.updateProducer(producer.id)
-          Redirect("/display-producers")
+          Redirect(DISPLAY_PRODUCERS_URL)
         }
       }
     )

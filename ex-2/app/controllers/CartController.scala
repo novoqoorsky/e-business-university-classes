@@ -12,6 +12,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CartController @Inject()(cartRepository: CartRepository, messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
+  
+  val DISPLAY_CARTS_URL = "/display-carts"
 
   val cartForm: Form[CreateCartForm] = Form {
     mapping(
@@ -41,7 +43,7 @@ class CartController @Inject()(cartRepository: CartRepository, messagesControlle
 
   def deleteCart(id: Long): Action[AnyContent] = Action {
     cartRepository.delete(id)
-    Redirect("/display-carts")
+    Redirect(DISPLAY_CARTS_URL)
   }
 
   def displayCart(id: Long): Action[AnyContent] = Action.async { implicit request =>
@@ -66,7 +68,7 @@ class CartController @Inject()(cartRepository: CartRepository, messagesControlle
       cart => {
         cartRepository.create(cart.value).map { _ =>
           routes.CartController.addCart()
-          Redirect("/display-carts")
+          Redirect(DISPLAY_CARTS_URL)
         }
       }
     )
@@ -82,7 +84,7 @@ class CartController @Inject()(cartRepository: CartRepository, messagesControlle
       cart => {
         cartRepository.update(cart.id, Cart(cart.id, cart.value)).map { _ =>
           routes.CartController.updateCart(cart.id)
-          Redirect("/display-carts")
+          Redirect(DISPLAY_CARTS_URL)
         }
       }
     )

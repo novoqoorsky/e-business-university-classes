@@ -13,6 +13,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class OrderController @Inject()(orderRepository: OrderRepository, messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
+  val DISPLAY_ORDERS_URL = "/display-orders"
+
   val orderForm: Form[CreateOrderForm] = Form {
     mapping(
       "reference" -> nonEmptyText
@@ -41,7 +43,7 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
 
   def deleteOrder(id: Long): Action[AnyContent] = Action {
     orderRepository.delete(id)
-    Redirect("/display-orders")
+    Redirect(DISPLAY_ORDERS_URL)
   }
 
   def displayOrder(id: Long): Action[AnyContent] = Action.async { implicit request =>
@@ -66,7 +68,7 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
       order => {
         orderRepository.create(order.reference).map { _ =>
           routes.OrderController.addOrder()
-          Redirect("/display-orders")
+          Redirect(DISPLAY_ORDERS_URL)
         }
       }
     )
@@ -82,7 +84,7 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
       order => {
         orderRepository.update(order.id, Order(order.id, order.reference)).map { _ =>
           routes.OrderController.updateOrder(order.id)
-          Redirect("/display-orders")
+          Redirect(DISPLAY_ORDERS_URL)
         }
       }
     )

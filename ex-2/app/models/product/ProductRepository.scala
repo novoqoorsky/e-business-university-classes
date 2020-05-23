@@ -26,8 +26,8 @@ class ProductRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
     def producer = column[Long]("producer")
     def price = column[Int]("price")
 
-    def category_fk = foreignKey("category_fk", category, categories)(_.id)
-    def producer_fk = foreignKey("producer_fk", producer, producers)(_.id)
+    def categoryFk = foreignKey("category_fk", category, categories)(_.id)
+    def producerFk = foreignKey("producer_fk", producer, producers)(_.id)
 
     def * = (id, name, description, category, producer, price) <> ((Product.apply _).tupled, Product.unapply)
   }
@@ -50,8 +50,8 @@ class ProductRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
     products.result
   }
 
-  def getByCategory(category_id: Long): Future[Seq[Product]] = db.run {
-    products.filter(_.category === category_id).result
+  def getByCategory(categoryId: Long): Future[Seq[Product]] = db.run {
+    products.filter(_.category === categoryId).result
   }
 
   def getById(id: Long): Future[Product] = db.run {
@@ -62,14 +62,14 @@ class ProductRepository @Inject()(dbConfigProvider: DatabaseConfigProvider,
     products.filter(_.id === id).result.headOption
   }
 
-  def getByCategories(category_ids: List[Long]): Future[Seq[Product]] = db.run {
-    products.filter(_.category inSet category_ids).result
+  def getByCategories(categoryIds: List[Long]): Future[Seq[Product]] = db.run {
+    products.filter(_.category inSet categoryIds).result
   }
 
   def delete(id: Long): Future[Unit] = db.run(products.filter(_.id === id).delete).map(_ => ())
 
-  def update(id: Long, new_product: Product): Future[Unit] = {
-    val productToUpdate: Product = new_product.copy(id)
+  def update(id: Long, newProduct: Product): Future[Unit] = {
+    val productToUpdate: Product = newProduct.copy(id)
     db.run(products.filter(_.id === id).update(productToUpdate)).map(_ => ())
   }
 }

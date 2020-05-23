@@ -23,8 +23,8 @@ class ClientOrdersRepository @Inject() (dbConfigProvider: DatabaseConfigProvider
     def client = column[Long]("client")
     def order = column[Long]("order")
 
-    def category_fk = foreignKey("category_fk", client, clients)(_.id)
-    def producer_fk = foreignKey("producer_fk", order, orders)(_.id)
+    def categoryFk = foreignKey("category_fk", client, clients)(_.id)
+    def producerFk = foreignKey("producer_fk", order, orders)(_.id)
 
     def * = (id, client, order) <> ((ClientOrders.apply _).tupled, ClientOrders.unapply)
   }
@@ -55,8 +55,8 @@ class ClientOrdersRepository @Inject() (dbConfigProvider: DatabaseConfigProvider
     clientOrders.filter(_.id === id).result.headOption
   }
 
-  def getByClient(client_id: Long): Future[Seq[ClientOrders]] = db.run {
-    clientOrders.filter(_.client === client_id).result
+  def getByClient(clientId: Long): Future[Seq[ClientOrders]] = db.run {
+    clientOrders.filter(_.client === clientId).result
   }
 
   def delete(id: Long): Future[Unit] = db.run(clientOrders.filter(_.id === id).delete).map(_ => ())
