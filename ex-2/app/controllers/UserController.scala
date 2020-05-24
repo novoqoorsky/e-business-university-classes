@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 import models.client.{Client, ClientRepository}
-import models.user.{User, UserRepository}
+import models.user.{DeprecatedUser, UserRepository}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.{JsObject, JsString, Json}
@@ -102,7 +102,7 @@ class UserController @Inject()(userRepository: UserRepository,
         )
       },
       user => {
-        userRepository.update(user.id, User(user.id, user.userName, user.password, user.email, user.client)).map { _ =>
+        userRepository.update(user.id, DeprecatedUser(user.id, user.userName, user.password, user.email, user.client)).map { _ =>
           routes.UserController.updateUser(user.id)
           Redirect(DISPLAY_USERS_URL)
         }
@@ -137,7 +137,7 @@ class UserController @Inject()(userRepository: UserRepository,
   def putUser(): Action[AnyContent] = Action { implicit request =>
     val u = request.body.asJson.get.asInstanceOf[JsObject].value
     val id = u("id").asInstanceOf[JsString].value.toLong
-    val user = User(
+    val user = DeprecatedUser(
       id,
       u("userName").asInstanceOf[JsString].value,
       u("password").asInstanceOf[JsString].value,

@@ -1,9 +1,13 @@
 package models.user
 
-import play.api.libs.json.{Json, OFormat}
+import java.util.UUID
 
-case class User(id: Long, userName: String, password: String, email: String, client: Long)
+import com.mohiva.play.silhouette.api.Identity
 
-object User {
-  implicit val userFormat: OFormat[User] = Json.format[User]
-}
+case class User(userID: UUID,
+                firstName: Option[String],
+                lastName: Option[String],
+                email: Option[String],
+                avatarURL: Option[String],
+                activated: Boolean,
+                role: UserRoles.UserRole) extends Identity
