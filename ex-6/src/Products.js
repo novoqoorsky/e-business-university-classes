@@ -21,19 +21,21 @@ class Products extends Component {
             },
             method: 'GET',
         })
-            .then(results => {
-                return results.json();
-            }).then(data => {
-            let products = data.map((prod) => {
-                return (
-                    <div key={prod.id}>
-                        <div className="title">{prod.name}</div>
-                        <div>{prod.description}</div>
-                        <div>{prod.category}</div>
-                    </div>
-                )
-            })
-            this.setState({products: products})
+            .then(response => Products.checkError(response))
+            .then(data => {
+                let products = data.map((prod) => {
+                    return (
+                        <div key={prod.id}>
+                            <div className="title">{prod.name}</div>
+                            <div>{prod.description}</div>
+                            <div>{prod.category}</div>
+                        </div>
+                    )
+                })
+                this.setState({products: products})
+            }).catch(error => {
+                console.log(error);
+                window.location.href = "/signin"
         })
     }
 
@@ -43,6 +45,14 @@ class Products extends Component {
                 {this.state.products}
             </div>
         )
+    }
+
+    static checkError(response) {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw Error(response.statusText);
+        }
     }
 }
 

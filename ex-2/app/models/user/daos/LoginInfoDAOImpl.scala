@@ -9,9 +9,6 @@ import play.api.db.slick.DatabaseConfigProvider
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Give access to the user object.
- */
 class LoginInfoDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
                                 )(implicit ec: ExecutionContext) extends LoginInfoDAO with DAOSlick {
   import profile.api._

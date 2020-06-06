@@ -10,18 +10,9 @@ import play.api.db.slick.DatabaseConfigProvider
 
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- * Give access to the user object.
- */
 class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvider, userRoleDAO: UserRoleDAO)(implicit ec: ExecutionContext) extends UserDAO with DAOSlick {
   import profile.api._
 
-  /**
-   * Finds a user by its login info.
-   *
-   * @param loginInfo The login info of the user to find.
-   * @return The found user or None if no user for the given login info could be found.
-   */
   def find(loginInfo: LoginInfo) = {
     val userQuery = for {
       dbLoginInfo <- loginInfoQuery(loginInfo)
@@ -35,12 +26,6 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
     }
   }
 
-  /**
-   * Finds a user by its user ID.
-   *
-   * @param userID The ID of the user to find.
-   * @return The found user or None if no user for the given ID could be found.
-   */
   def find(userID: UUID) = {
     val query = slickUsers.filter(_.id === userID)
 
@@ -49,12 +34,6 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
     }
   }
 
-  /**
-   * Saves a user.
-   *
-   * @param user The user to save.
-   * @return The saved user.
-   */
   def save(user: User) = {
     // combine database actions to be run sequentially
     val actions = (for {
@@ -66,23 +45,10 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
     db.run(actions).map(_ => user)
   }
 
-  /**
-   * Updates user role
-   *
-   * @param userId user id
-   * @param role   user role to update to
-   * @return
-   */
   override def updateUserRole(userId: UUID, role: UserRoles.UserRole): Future[Boolean] = {
     db.run(slickUsers.filter(_.id === userId).map(_.roleId).update(role.id)).map(_ > 0)
   }
 
-  /**
-   * Finds a user by its email
-   *
-   * @param email email of the user to find
-   * @return The found user or None if no user for the given login info could be found
-   */
   def findByEmail(email: String): Future[Option[User]] = {
     db.run(slickUsers.filter(_.email === email).take(1).result.headOption).map(_ map DBUser.toUser)
   }

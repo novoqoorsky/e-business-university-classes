@@ -16,12 +16,11 @@ class SignUpController @Inject()(components: ControllerComponents,
                                  signUpService: SignUpService,
                                 )(implicit ex: ExecutionContext) extends AbstractController(components) with I18nSupport {
 
-  def submit: Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
+  def submit: Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request =>
     SignUpForm.form.bindFromRequest.fold(
       _ => Future.successful(BadRequest),
       data => {
         val activationUrlProvider: UUID => String = authTokenId => authTokenId.toString
-        println(data)
 
         signUpService.signUpByCredentials(data, request.remoteAddress, activationUrlProvider).map {
           case UserCreated(user) =>
@@ -47,8 +46,7 @@ object SignUpForm {
       "firstName" -> nonEmptyText,
       "lastName" -> nonEmptyText,
       "email" -> email,
-      "password" -> nonEmptyText,
-      "captchaResponse" -> nonEmptyText
+      "password" -> nonEmptyText
     )(CredentialsSingUpData.apply)(CredentialsSingUpData.unapply)
   )
 }

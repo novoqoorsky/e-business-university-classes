@@ -9,6 +9,7 @@ import ProductForm from './ProductForm'
 
 import './App.css';
 import SignUpForm from "./SignUpForm";
+import SignInForm from "./SignInForm";
 
 function App() {
     return <Router>
@@ -27,8 +28,9 @@ function App() {
                     <li className="pure-menu-item pure-menu-selected">
                         <Link to="/productadd" className="pure-menu-link">Add Product</Link>
                     </li>
-                    <li className="pure-menu-item"><a href="#" className="pure-menu-link">Sign in</a></li>
-
+                    <li className="pure-menu-item pure-menu-selected">
+                        <Link to="/signin" className="pure-menu-link">Sign in</Link>
+                    </li>
                     <li className="pure-menu-item pure-menu-selected">
                         <Link to="/signup" className="pure-menu-link">Sign up</Link>
                     </li>
@@ -37,6 +39,7 @@ function App() {
                 <Route path="/products" component={Products}/>
                 <Route path="/productadd" component={ProductForm}/>
                 <Route path="/signup" component={SignUpForm}/>
+                <Route path="/signin" component={SignInForm}/>
             </div>
         </div>
 

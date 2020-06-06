@@ -15,7 +15,7 @@ trait DBTableDefinitions {
 
   case class DBUserRole(id: Int, name: String)
 
-  class AuthTokens(tag: Tag) extends Table[AuthToken](tag, Some("auth"), "token") {
+  class AuthTokens(tag: Tag) extends Table[AuthToken](tag, "token") {
 
     def id = column[UUID]("id", O.PrimaryKey)
     def userId = column[UUID]("user_id")
@@ -23,7 +23,7 @@ trait DBTableDefinitions {
     def * = (id, userId, expiry) <> (AuthToken.tupled, AuthToken.unapply)
   }
 
-  class UserRoles(tag: Tag) extends Table[DBUserRole](tag, Some("auth"), "role") {
+  class UserRoles(tag: Tag) extends Table[DBUserRole](tag, "role") {
     def id = column[Int]("id", O.PrimaryKey)
     def name = column[String]("name")
     def * = (id, name) <> (DBUserRole.tupled, DBUserRole.unapply)
@@ -43,7 +43,7 @@ trait DBTableDefinitions {
     def fromUser(u: User): DBUser = DBUser(u.userID, u.firstName, u.lastName, u.email, u.avatarURL, u.activated, u.role.id, ZonedDateTime.now)
   }
 
-  class Users(tag: Tag) extends Table[DBUser](tag, Some("auth"), "user") {
+  class Users(tag: Tag) extends Table[DBUser](tag,"user") {
 
     def id = column[UUID]("id", O.PrimaryKey)
     def firstName = column[Option[String]]("first_name")
@@ -62,7 +62,7 @@ trait DBTableDefinitions {
     def toLoginInfo(dbLoginInfo: DBLoginInfo) = LoginInfo(dbLoginInfo.providerID, dbLoginInfo.providerKey)
   }
 
-  class LoginInfos(tag: Tag) extends Table[DBLoginInfo](tag, Some("auth"), "login_info") {
+  class LoginInfos(tag: Tag) extends Table[DBLoginInfo](tag,"login_info") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def providerID = column[String]("provider_id")
     def providerKey = column[String]("provider_key")
@@ -74,7 +74,7 @@ trait DBTableDefinitions {
                               loginInfoId: Long
                             )
 
-  class UserLoginInfos(tag: Tag) extends Table[DBUserLoginInfo](tag, Some("auth"), "user_login_info") {
+  class UserLoginInfos(tag: Tag) extends Table[DBUserLoginInfo](tag,"user_login_info") {
     def userID = column[UUID]("user_id")
     def loginInfoId = column[Long]("login_info_id")
     def * = (userID, loginInfoId) <> (DBUserLoginInfo.tupled, DBUserLoginInfo.unapply)
@@ -87,7 +87,7 @@ trait DBTableDefinitions {
                              loginInfoId: Long
                            )
 
-  class PasswordInfos(tag: Tag) extends Table[DBPasswordInfo](tag, Some("auth"), "password_info") {
+  class PasswordInfos(tag: Tag) extends Table[DBPasswordInfo](tag, "password_info") {
     def hasher = column[String]("hasher")
     def password = column[String]("password")
     def salt = column[Option[String]]("salt")
@@ -102,7 +102,7 @@ trait DBTableDefinitions {
                            loginInfoId: Long
                          )
 
-  class OAuth1Infos(tag: Tag) extends Table[DBOAuth1Info](tag, Some("auth"), "oauth1_info") {
+  class OAuth1Infos(tag: Tag) extends Table[DBOAuth1Info](tag, "oauth1_info") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def token = column[String]("token")
     def secret = column[String]("secret")
@@ -119,7 +119,7 @@ trait DBTableDefinitions {
                            loginInfoId: Long
                          )
 
-  class OAuth2Infos(tag: Tag) extends Table[DBOAuth2Info](tag, Some("auth"), "oauth2_info") {
+  class OAuth2Infos(tag: Tag) extends Table[DBOAuth2Info](tag,"oauth2_info") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def accessToken = column[String]("access_token")
     def tokenType = column[Option[String]]("token_type")

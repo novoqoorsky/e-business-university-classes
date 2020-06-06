@@ -1,5 +1,7 @@
 package controllers
 
+import java.util.UUID
+
 import com.mohiva.play.silhouette.api.Authenticator.Implicits._
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.services.AuthenticatorResult
@@ -8,7 +10,7 @@ import models.user.User
 import net.ceedubs.ficus.Ficus._
 import play.api.Configuration
 import play.api.i18n.I18nSupport
-import play.api.libs.json.Json
+import play.api.libs.json.{Format, JsObject, JsString, JsValue, Json, Writes}
 import play.api.mvc._
 import utils.silhouette.DefaultEnv
 

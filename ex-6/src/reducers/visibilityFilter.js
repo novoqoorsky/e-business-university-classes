@@ -1,7 +1,7 @@
 
 import { VisibilityFilters } from '../actions'
 
-const visibilityFilter = (action, state = VisibilityFilters.SHOW_ALL) => {
+const visibilityFilter = (state = VisibilityFilters.SHOW_ALL, action) => {
     if (action.type === 'SET_VISIBILITY_FILTER') {
         return action.filter
     }

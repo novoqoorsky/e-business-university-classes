@@ -16,13 +16,6 @@ import models.user.daos.LoginInfoDAO
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-/**
- *
- * @param userService             The user service implementation.
- * @param credentialsProvider     The credentials provider.
- * @param authInfoRepository      The auth info repository implementation.
- * @param ec                      The execution context.
- */
 class AuthenticateService @Inject()(credentialsProvider: CredentialsProvider,
                                     userService: UserService,
                                     authInfoRepository: AuthInfoRepository,
@@ -51,15 +44,6 @@ class AuthenticateService @Inject()(credentialsProvider: CredentialsProvider,
     }
   }
 
-  /**
-   * Adds authentication method to user
-   *
-   * @param userId    user id
-   * @param loginInfo login info
-   * @param authInfo  auth info
-   * @tparam T tyupe of auth info
-   * @return
-   */
   def addAuthenticateMethod[T <: AuthInfo](userId: UUID, loginInfo: LoginInfo, authInfo: T): Future[Unit] = {
     for {
       _ <- loginInfoDAO.saveUserLoginInfo(userId, loginInfo)
@@ -67,23 +51,10 @@ class AuthenticateService @Inject()(credentialsProvider: CredentialsProvider,
     } yield ()
   }
 
-  /**
-   * Checks whether user have authentication method for given provider id
-   *
-   * @param userId     user id
-   * @param providerId authentication provider id
-   * @return true if user has authentication method for given provider id, otherwise false
-   */
   def userHasAuthenticationMethod(userId: UUID, providerId: String): Future[Boolean] = {
     loginInfoDAO.find(userId, providerId).map(_.nonEmpty)
   }
 
-  /**
-   * Get list of providers of user authentication methods
-   *
-   * @param email user email
-   * @return
-   */
   def getAuthenticationProviders(email: String): Future[Seq[String]] = loginInfoDAO.getAuthenticationProviders(email)
 }
 

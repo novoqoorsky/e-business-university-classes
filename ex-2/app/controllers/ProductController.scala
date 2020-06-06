@@ -1,5 +1,7 @@
 package controllers
 
+import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import javax.inject.{Inject, Singleton}
 import models.category.{Category, CategoryRepository}
 import models.producer.{Producer, ProducerRepository}
@@ -8,6 +10,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
+import utils.silhouette.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -16,7 +19,8 @@ import scala.util.{Failure, Success}
 class ProductController @Inject()(productRepository: ProductRepository,
                                   categoryRepository: CategoryRepository,
                                   producerRepository: ProducerRepository,
-                                  messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
+                                  messagesControllerComponents: MessagesControllerComponents,
+                                  silhouette: Silhouette[DefaultEnv])(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
   val DISPLAY_PRODUCTS_URL = "/display-products"
@@ -130,7 +134,7 @@ class ProductController @Inject()(productRepository: ProductRepository,
 
   // REACT
 
-  def products(): Action[AnyContent] = Action.async {
+  def products(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
     productRepository.list().map(products => Ok(Json.toJson(products)))
   }
 

@@ -37,17 +37,6 @@ CREATE TABLE "address"
     "postal_code"  VARCHAR NOT NULL
 );
 
-CREATE TABLE "user"
-(
-    "id"        INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "user_name" VARCHAR NOT NULL,
-    "password"  VARCHAR NOT NULL,
-    "email"     VARCHAR NOT NULL,
-    "client"    INT,
-
-    FOREIGN KEY (client) REFERENCES client (id)
-);
-
 CREATE TABLE "client"
 (
     "id"        INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -107,7 +96,6 @@ DROP TABLE "category";
 DROP TABLE "product";
 DROP TABLE "producer";
 DROP TABLE "address";
-DROP TABLE "user";
 DROP TABLE "client";
 DROP TABLE "cart";
 DROP TABLE "cart_products";

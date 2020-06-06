@@ -3,7 +3,7 @@ name := "ex-2"
 version := "0.1"
 
 scalaVersion := "2.12.8"
-val silhouetteVersion = "6.1.0"
+val silhouetteVersion = "7.0.0"
 
 resolvers ++= Seq(
   "atlassian-maven" at "https://maven.atlassian.com/content/repositories/atlassian-public"

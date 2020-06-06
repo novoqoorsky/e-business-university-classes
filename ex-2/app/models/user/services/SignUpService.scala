@@ -48,5 +48,4 @@ case object InvalidRecaptchaCode extends SignUpResult
 case class CredentialsSingUpData(firstName: String,
                                  lastName: String,
                                  email: String,
-                                 password: String,
-                                 captchaResponse: String)
+                                 password: String)
