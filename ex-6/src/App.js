@@ -4,12 +4,13 @@ import {
     Route,
     Link
 } from 'react-router-dom';
-import Products from './Products'
-import ProductForm from './ProductForm'
+import Products from './components/product/Products'
+import ProductForm from './components/product/ProductForm'
 
 import './App.css';
-import SignUpForm from "./SignUpForm";
-import SignInForm from "./SignInForm";
+import SignUpForm from "./components/auth/SignUpForm";
+import SignInForm from "./components/auth/SignInForm";
+import AuthenticationService from "./services/AuthenticationService";
 
 function App() {
     return <Router>

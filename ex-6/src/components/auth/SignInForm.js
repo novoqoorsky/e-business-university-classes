@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import AuthenticationService from "../../services/AuthenticationService";
 
 class SignInForm extends Component {
 
@@ -22,6 +23,10 @@ class SignInForm extends Component {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(object),
+        }).then(results => {
+            return results.json();
+        }).then(userData => {
+            AuthenticationService.setUserData(userData);
         });
 
         this.props.history.push('/#');

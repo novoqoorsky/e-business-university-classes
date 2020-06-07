@@ -30,7 +30,7 @@ class Categories extends Component {
                         <div className="name">{cat.name}</div>
                     </div>
                 )
-            })
+            });
             this.setState({categories: categories})
         })
     }

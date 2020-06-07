@@ -23,7 +23,7 @@ import models.user.services.{UserService, UserServiceImpl}
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 import net.ceedubs.ficus.readers.ValueReader
-import net.ceedubs.ficus.readers.EnumerationReader._
+import net.ceedubs.ficus.readers.EnumerationReader._ // DO NOT REMOVE
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.db.slick.DatabaseConfigProvider
@@ -52,7 +52,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
     bind[UserService].to[UserServiceImpl]
     bind[UserDAO].to[UserDAOImpl]
-    //bind[CacheLayer].to[PlayCacheLayer] TODO CreationException
+    bind[CacheLayer].to[PlayCacheLayer]
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
     bind[EventBus].toInstance(EventBus())

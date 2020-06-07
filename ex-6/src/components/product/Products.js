@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import AuthenticationService from "../../services/AuthenticationService";
 
 class Products extends Component {
 
@@ -10,7 +11,7 @@ class Products extends Component {
     }
 
     componentDidMount() {
-        var url = "http://localhost:9000/products"
+        var url = "http://localhost:9000/products";
 
         fetch(url, {
             mode: 'cors',
@@ -18,6 +19,7 @@ class Products extends Component {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin':'http://localhost:3000',
+                'X-Auth-Token': AuthenticationService.getAuthToken()
             },
             method: 'GET',
         })
@@ -31,7 +33,7 @@ class Products extends Component {
                             <div>{prod.category}</div>
                         </div>
                     )
-                })
+                });
                 this.setState({products: products})
             }).catch(error => {
                 console.log(error);

@@ -27,4 +27,6 @@ libraryDependencies ++= Seq(guice)
 
 libraryDependencies += filters
 
+libraryDependencies ++= Seq(ehcache)
+
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
