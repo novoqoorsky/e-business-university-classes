@@ -26,11 +26,6 @@ class HomeController @Inject()(messagesControllerComponents: MessagesControllerC
     Ok(views.html.index("Welcome to Strong@Home store!"))
   }
 
-  def securedUrl: Action[AnyContent] = silhouette.SecuredAction {
-    _ =>
-      Ok("Secured url")
-  }
-
   def signOut: Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
     silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
     silhouette.env.authenticatorService.discard(request.authenticator, Ok)

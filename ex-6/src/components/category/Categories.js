@@ -10,7 +10,7 @@ class Categories extends Component {
     }
 
     componentDidMount() {
-        var url = "http://localhost:9090/categories"
+        const url = "http://localhost:3000/categories";
 
         fetch(url, {
             mode: 'cors',

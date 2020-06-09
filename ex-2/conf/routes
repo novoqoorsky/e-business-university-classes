@@ -1,6 +1,5 @@
 GET           /                            controllers.HomeController.index
 GET           /sign-out                    controllers.HomeController.signOut
-GET           /secured                     controllers.HomeController.securedUrl
 
 POST          /sign-in                     controllers.SignInController.submit
 POST          /sign-up                     controllers.SignUpController.submit

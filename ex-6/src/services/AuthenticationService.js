@@ -1,8 +1,8 @@
+import React from 'react';
+
 class AuthenticationService {
 
-    constructor() {
-        this.userData = null;
-    }
+    constructor() {}
 
     static setUserData(userData) {
         this.userData = userData;
@@ -13,7 +13,7 @@ class AuthenticationService {
     }
 
     static isAdmin() {
-        return this.userData === undefined ? false : this.userData.role === 1;
+        return this.userData === undefined ? false : this.userData.role === "Admin";
     }
 
     static isAuthenticated() {

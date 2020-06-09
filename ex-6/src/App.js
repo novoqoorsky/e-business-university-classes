@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {
     BrowserRouter as Router,
     Route,
@@ -10,41 +10,79 @@ import ProductForm from './components/product/ProductForm'
 import './App.css';
 import SignUpForm from "./components/auth/SignUpForm";
 import SignInForm from "./components/auth/SignInForm";
+import SignOut from "./components/auth/SignOut";
 import AuthenticationService from "./services/AuthenticationService";
 
-function App() {
-    return <Router>
+class App extends Component {
 
-        <div className="header">
-            <div className="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-                <a className="pure-menu-heading" href="/" style={{color:"dodgerblue"}}>Strong@Home</a>
+    constructor(props) {
+        super(props);
+        this.state = {
+            isAdmin: AuthenticationService.isAdmin(),
+            isAuthenticated: AuthenticationService.isAuthenticated()
+        };
+        this.onSignIn = this.onSignIn.bind(this);
+    }
 
-                <ul className="pure-menu-list">
-                    <li className="pure-menu-item pure-menu-selected">
-                        <a href="#" className="pure-menu-link">Home</a>
-                    </li>
-                    <li className="pure-menu-item pure-menu-selected">
-                        <Link to="/products" className="pure-menu-link">Products</Link>
-                    </li>
-                    <li className="pure-menu-item pure-menu-selected">
-                        <Link to="/productadd" className="pure-menu-link">Add Product</Link>
-                    </li>
-                    <li className="pure-menu-item pure-menu-selected">
-                        <Link to="/signin" className="pure-menu-link">Sign in</Link>
-                    </li>
-                    <li className="pure-menu-item pure-menu-selected">
-                        <Link to="/signup" className="pure-menu-link">Sign up</Link>
-                    </li>
-                </ul>
+    onSignOut = () => {
+        this.setState({
+            isAdmin: false,
+            isAuthenticated: false
+        });
+    };
 
-                <Route path="/products" component={Products}/>
-                <Route path="/productadd" component={ProductForm}/>
-                <Route path="/signup" component={SignUpForm}/>
-                <Route path="/signin" component={SignInForm}/>
+    onSignIn = () => {
+        this.setState({
+            isAdmin: AuthenticationService.isAdmin(),
+            isAuthenticated: true
+        });
+    };
+
+    render() {
+        return <Router>
+            <div className="header" id="menu">
+                <div className="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+                    <a className="pure-menu-heading" href="/" style={{color: "dodgerblue"}}>Strong@Home</a>
+
+                    <ul className="pure-menu-list">
+                        <li className="pure-menu-item pure-menu-selected">
+                            <a href="#" className="pure-menu-link">Home</a>
+                        </li>
+                        <li className="pure-menu-item pure-menu-selected">
+                            <Link to="/products" className="pure-menu-link">Products</Link>
+                        </li>
+                        {this.state.isAdmin && (
+                            <li className="pure-menu-item pure-menu-selected">
+                                <Link to="/productadd" className="pure-menu-link">Add Product</Link>
+                            </li>
+                        )}
+                        {!this.state.isAuthenticated && (
+                            <>
+                                <li className="pure-menu-item pure-menu-selected">
+                                    <Link to="/signin" className="pure-menu-link">Sign in</Link>
+                                </li>
+                                <li className="pure-menu-item pure-menu-selected">
+                                    <Link to="/signup" className="pure-menu-link">Sign up</Link>
+                                </li>
+                            </>
+                        )}
+                        {this.state.isAuthenticated && (
+                            <li className="pure-menu-item pure-menu-selected">
+                                <Link to="/signout" className="pure-menu-link" onClick={this.onSignOut}>Sign out</Link>
+                            </li>
+                        )}
+                    </ul>
+
+                    <Route path="/products" component={Products}/>
+                    <Route path="/productadd" component={ProductForm}/>
+                    <Route path="/signup" component={SignUpForm}/>
+                    <Route path="/signin" render={(props) => <SignInForm {...props} onSignIn={this.onSignIn}/>}/>
+                    <Route path="/signout" component={SignOut}/>
+                </div>
             </div>
-        </div>
 
-    </Router>
+        </Router>
+    }
 }
 
 export default App;

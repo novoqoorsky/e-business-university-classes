@@ -11,10 +11,10 @@ class SignInForm extends Component {
     handleSubmit(event) {
         event.preventDefault();
         const data = new FormData(event.target);
-        var object = {}
+        var object = {};
         data.forEach((value, key) => {object[key] = value});
 
-        var url = 'http://localhost:9000/sign-in';
+        const url = 'http://localhost:9000/sign-in';
 
         fetch(url, {
             method: 'POST',
@@ -27,6 +27,7 @@ class SignInForm extends Component {
             return results.json();
         }).then(userData => {
             AuthenticationService.setUserData(userData);
+            this.props.onSignIn();
         });
 
         this.props.history.push('/#');
