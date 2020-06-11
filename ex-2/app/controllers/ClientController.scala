@@ -1,5 +1,7 @@
 package controllers
 
+import com.mohiva.play.silhouette
+import com.mohiva.play.silhouette.api.Silhouette
 import javax.inject.{Inject, Singleton}
 import models.address.{Address, AddressRepository}
 import models.cart.{Cart, CartRepository}
@@ -8,6 +10,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
+import utils.silhouette.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
@@ -16,7 +19,8 @@ import scala.util.{Failure, Success}
 class ClientController @Inject()(clientRepository: ClientRepository,
                                  addressRepository: AddressRepository,
                                  cartRepository: CartRepository,
-                                 messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
+                                 messagesControllerComponents: MessagesControllerComponents,
+                                 silhouette: Silhouette[DefaultEnv])(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
   val DISPLAY_CLIENTS_URL = "/display-clients"
@@ -28,6 +32,7 @@ class ClientController @Inject()(clientRepository: ClientRepository,
     mapping(
       "name" -> nonEmptyText,
       "lastName" -> nonEmptyText,
+      "email" -> nonEmptyText,
       "address" -> longNumber,
       "cart" -> longNumber,
     )(CreateClientForm.apply)(CreateClientForm.unapply)
@@ -38,6 +43,7 @@ class ClientController @Inject()(clientRepository: ClientRepository,
       "id" -> longNumber,
       "name" -> nonEmptyText,
       "lastName" -> nonEmptyText,
+      "email" -> nonEmptyText,
       "address" -> longNumber,
       "cart" -> longNumber,
     )(UpdateClientForm.apply)(UpdateClientForm.unapply)
@@ -57,7 +63,7 @@ class ClientController @Inject()(clientRepository: ClientRepository,
     retrieveForeignProperties()
 
     clientRepository.getById(id).map(client => {
-      val filledUpdateForm = updateClientForm.fill(UpdateClientForm(client.id, client.name, client.lastName, client.address, client.cart))
+      val filledUpdateForm = updateClientForm.fill(UpdateClientForm(client.id, client.name, client.lastName, client.email, client.address, client.cart))
       Ok(views.html.clientupdate(filledUpdateForm, addresses, carts))
     })
 
@@ -89,7 +95,7 @@ class ClientController @Inject()(clientRepository: ClientRepository,
         )
       },
       client => {
-        clientRepository.create(client.name, client.lastName, client.address, client.cart).map { _ =>
+        clientRepository.create(client.name, client.lastName, client.email, client.address, client.cart).map { _ =>
           routes.ClientController.addClient()
           Redirect(DISPLAY_CLIENTS_URL)
         }
@@ -107,7 +113,7 @@ class ClientController @Inject()(clientRepository: ClientRepository,
         )
       },
       client => {
-        clientRepository.update(client.id, Client(client.id, client.name, client.lastName, client.address, client.cart)).map { _ =>
+        clientRepository.update(client.id, Client(client.id, client.name, client.lastName, client.email, client.address, client.cart)).map { _ =>
           routes.ClientController.updateClient(client.id)
           Redirect(DISPLAY_CLIENTS_URL)
         }
@@ -128,18 +134,32 @@ class ClientController @Inject()(clientRepository: ClientRepository,
 
   // REACT
 
+  def clientByEmail(email: String): Action[AnyContent] = silhouette.SecuredAction.async {
+    clientRepository.getByEmailOption(email).map(client => Ok(Json.toJson(client)))
+  }
+
   def clients(): Action[AnyContent] = Action.async {
     clientRepository.list().map(clients => Ok(Json.toJson(clients)))
   }
 
-  def postClient(): Action[AnyContent] = Action { implicit request =>
+  def postClient(): Action[AnyContent] = silhouette.SecuredAction { implicit request =>
     val c = request.body.asJson.get.asInstanceOf[JsObject].value
-    clientRepository.create(
-      c("name").asInstanceOf[JsString].value,
-      c("lastName").asInstanceOf[JsString].value,
-      c("address").asInstanceOf[JsString].value.toLong,
-      c("cart").asInstanceOf[JsString].value.toLong
-    )
+    addressRepository.create(
+      c("city").asInstanceOf[JsString].value,
+      c("streetName").asInstanceOf[JsString].value,
+      c("houseNumber").asInstanceOf[JsString].value.toInt,
+      c("postalCode").asInstanceOf[JsString].value,
+    ).map(address => {
+      cartRepository.create(0).map(cart => {
+        clientRepository.create(
+          c("firstName").asInstanceOf[JsString].value,
+          c("lastName").asInstanceOf[JsString].value,
+          c("email").asInstanceOf[JsString].value,
+          address.id,
+          cart.id
+        )
+      })
+    })
     Created("Client created")
   }
 
@@ -150,6 +170,7 @@ class ClientController @Inject()(clientRepository: ClientRepository,
       id,
       c("name").asInstanceOf[JsString].value,
       c("lastName").asInstanceOf[JsString].value,
+      c("email").asInstanceOf[JsString].value,
       c("address").asInstanceOf[JsString].value.toLong,
       c("cart").asInstanceOf[JsString].value.toLong
     )
@@ -163,5 +184,5 @@ class ClientController @Inject()(clientRepository: ClientRepository,
   }
 }
 
-case class CreateClientForm(name: String, lastName: String, address: Long, cart: Long)
-case class UpdateClientForm(id: Long, name: String, lastName: String, address: Long, cart: Long)
+case class CreateClientForm(name: String, lastName: String, email: String, address: Long, cart: Long)
+case class UpdateClientForm(id: Long, name: String, lastName: String, email:String, address: Long, cart: Long)

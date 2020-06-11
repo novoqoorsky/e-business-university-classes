@@ -22,12 +22,13 @@ class ClientRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
     def lastName = column[String]("last_name")
+    def email = column[String]("email")
     def address = column[Long]("address")
     def cart = column[Long]("cart")
 
     def addressFk = foreignKey("address_fk", address, addresses)(_.id)
 
-    def * = (id, name, lastName, address, cart) <> ((Client.apply _).tupled, Client.unapply)
+    def * = (id, name, lastName, email, address, cart) <> ((Client.apply _).tupled, Client.unapply)
   }
 
   import addressRepository.AddressTable
@@ -35,11 +36,11 @@ class ClientRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
   private val clients = TableQuery[ClientTable]
   private val addresses = TableQuery[AddressTable]
 
-  def create(name: String, lastName: String, address: Long, cart: Long): Future[Client] = db.run {
-    (clients.map(c => (c.name, c.lastName, c.address, c.cart))
+  def create(name: String, lastName: String, email: String, address: Long, cart: Long): Future[Client] = db.run {
+    (clients.map(c => (c.name, c.lastName, c.email, c.address, c.cart))
       returning clients.map(_.id)
-      into { case ((name, lastName, address, cart), id) => Client(id, name, lastName, address, cart) }
-      ) += (name, lastName, address, cart)
+      into { case ((name, lastName, email, address, cart), id) => Client(id, name, lastName, email, address, cart) }
+      ) += (name, lastName, email, address, cart)
   }
 
   def list(): Future[Seq[Client]] = db.run {
@@ -53,6 +54,11 @@ class ClientRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
   def getByIdOption(id: Long): Future[Option[Client]] = db.run {
     clients.filter(_.id === id).result.headOption
   }
+
+  def getByEmailOption(email: String): Future[Option[Client]] = db.run {
+    clients.filter(_.email === email).result.headOption
+  }
+
 
   def delete(id: Long): Future[Unit] = db.run(clients.filter(_.id === id).delete).map(_ => ())
 

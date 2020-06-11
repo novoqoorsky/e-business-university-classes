@@ -1,17 +1,20 @@
 package controllers
 
+import com.mohiva.play.silhouette.api.Silhouette
 import javax.inject.{Inject, Singleton}
 import models.address.{Address, AddressRepository}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
+import utils.silhouette.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AddressController @Inject()(addressRepository: AddressRepository,
-                                  messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
+                                  messagesControllerComponents: MessagesControllerComponents,
+                                  silhouette: Silhouette[DefaultEnv])(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
   val DISPLAY_ADDRESSES_URL = "/display-addresses"
@@ -98,6 +101,10 @@ class AddressController @Inject()(addressRepository: AddressRepository,
   }
 
   // REACT
+
+  def addressById(id: Long): Action[AnyContent] = silhouette.SecuredAction.async {
+    addressRepository.getById(id).map(address => Ok(Json.toJson(address)))
+  }
 
   def addresses(): Action[AnyContent] = Action.async {
     addressRepository.list().map(addresses => Ok(Json.toJson(addresses)))

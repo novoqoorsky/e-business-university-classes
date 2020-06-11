@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import AuthenticationService from "../../services/AuthenticationService";
+import App from "../../App";
 
 class Products extends Component {
 
@@ -11,7 +12,7 @@ class Products extends Component {
     }
 
     componentDidMount() {
-        var url = "http://localhost:9000/products";
+        const url = "http://localhost:9000/products";
 
         fetch(url, {
             mode: 'cors',
@@ -23,7 +24,7 @@ class Products extends Component {
             },
             method: 'GET',
         })
-            .then(response => Products.checkError(response))
+            .then(response => App.checkError(response))
             .then(data => {
                 let products = data.map((prod) => {
                     return (
@@ -38,7 +39,7 @@ class Products extends Component {
             }).catch(error => {
                 console.log(error);
                 window.location.href = "/signin"
-        })
+            });
     }
 
     render() {
@@ -47,14 +48,6 @@ class Products extends Component {
                 {this.state.products}
             </div>
         )
-    }
-
-    static checkError(response) {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw Error(response.statusText);
-        }
     }
 }
 

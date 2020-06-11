@@ -43,7 +43,7 @@ class UserServiceImpl @Inject()(userDAO: UserDAO, loginInfoDAO: LoginInfoDAO)(im
             lastName = lastName,
             email = Some(email),
             avatarURL = avatarURL,
-            activated = false,
+            activated = true,
             role = UserRoles.User
           ))
       }

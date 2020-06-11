@@ -3,6 +3,7 @@ package controllers
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import javax.inject.{Inject, Singleton}
+import models.cartproducts.CartProductsRepository
 import models.category.{Category, CategoryRepository}
 import models.producer.{Producer, ProducerRepository}
 import models.product.{Product, ProductRepository}
@@ -19,6 +20,7 @@ import scala.util.{Failure, Success}
 class ProductController @Inject()(productRepository: ProductRepository,
                                   categoryRepository: CategoryRepository,
                                   producerRepository: ProducerRepository,
+                                  cartProductsRepository: CartProductsRepository,
                                   messagesControllerComponents: MessagesControllerComponents,
                                   silhouette: Silhouette[DefaultEnv])(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
@@ -136,6 +138,12 @@ class ProductController @Inject()(productRepository: ProductRepository,
 
   def products(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
     productRepository.list().map(products => Ok(Json.toJson(products)))
+  }
+
+  def productsInCart(cart: Long): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    cartProductsRepository.getByCart(cart).map(cartProduct => cartProduct.map(_.product))
+      .flatMap(productIds => productRepository.getByIds(productIds).map(products => Ok(Json.toJson(products)))
+    )
   }
 
   def postProduct(): Action[AnyContent] = Action { implicit request =>

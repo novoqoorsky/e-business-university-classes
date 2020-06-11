@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import AuthenticationService from "../../services/AuthenticationService";
+import App from "../../App";
 
 class SignInForm extends Component {
 
@@ -12,7 +13,9 @@ class SignInForm extends Component {
         event.preventDefault();
         const data = new FormData(event.target);
         var object = {};
-        data.forEach((value, key) => {object[key] = value});
+        data.forEach((value, key) => {
+            object[key] = value
+        });
 
         const url = 'http://localhost:9000/sign-in';
 
@@ -23,12 +26,16 @@ class SignInForm extends Component {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(object),
-        }).then(results => {
-            return results.json();
-        }).then(userData => {
-            AuthenticationService.setUserData(userData);
-            this.props.onSignIn();
-        });
+        })
+            .then(response => App.checkError(response))
+            .then(userData => {
+                AuthenticationService.setUserData(userData);
+                this.props.onSignIn();
+            })
+            .catch(error => {
+                console.log(error);
+                window.location.href = "/signin"
+            });
 
         this.props.history.push('/#');
     }
@@ -36,7 +43,7 @@ class SignInForm extends Component {
     render() {
 
         return (
-            <div className="content" style={{position:"absolute", left:"30px", top:"50px"}}>
+            <div className="content" style={{position: "absolute", left: "30px", top: "50px"}}>
                 <form onSubmit={this.handleSubmit} className="pure-form pure-form-stacked">
 
                     <label htmlFor="email">Email</label>

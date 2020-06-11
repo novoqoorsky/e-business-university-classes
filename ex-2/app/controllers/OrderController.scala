@@ -1,30 +1,39 @@
 package controllers
 
+import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import javax.inject.{Inject, Singleton}
+import models.clientorders.ClientOrdersRepository
 import models.order.{Order, OrderRepository}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.{JsObject, JsString, Json}
-import play.api.mvc._
+import play.api.mvc.{Action, _}
+import utils.silhouette.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class OrderController @Inject()(orderRepository: OrderRepository, messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
+class OrderController @Inject()(orderRepository: OrderRepository,
+                                clientOrdersRepository: ClientOrdersRepository,
+                                messagesControllerComponents: MessagesControllerComponents,
+                                silhouette: Silhouette[DefaultEnv])(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
 
   val DISPLAY_ORDERS_URL = "/display-orders"
 
   val orderForm: Form[CreateOrderForm] = Form {
     mapping(
-      "reference" -> nonEmptyText
+      "reference" -> nonEmptyText,
+      "cart" -> longNumber
     )(CreateOrderForm.apply)(CreateOrderForm.unapply)
   }
 
   val updateOrderForm: Form[UpdateOrderForm] = Form {
     mapping(
       "id" -> longNumber,
-      "reference" -> nonEmptyText
+      "reference" -> nonEmptyText,
+      "cart" -> longNumber
     )(UpdateOrderForm.apply)(UpdateOrderForm.unapply)
   }
 
@@ -35,7 +44,7 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
   def updateOrder(id: Long): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
 
     orderRepository.getById(id).map(order => {
-      val filledUpdateForm = updateOrderForm.fill(UpdateOrderForm(order.id, order.reference))
+      val filledUpdateForm = updateOrderForm.fill(UpdateOrderForm(order.id, order.reference, order.cart))
       Ok(views.html.orderupdate(filledUpdateForm))
     })
 
@@ -66,7 +75,7 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
         )
       },
       order => {
-        orderRepository.create(order.reference).map { _ =>
+        orderRepository.create(order.reference, order.cart).map { _ =>
           routes.OrderController.addOrder()
           Redirect(DISPLAY_ORDERS_URL)
         }
@@ -82,7 +91,7 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
         )
       },
       order => {
-        orderRepository.update(order.id, Order(order.id, order.reference)).map { _ =>
+        orderRepository.update(order.id, Order(order.id, order.reference, order.cart)).map { _ =>
           routes.OrderController.updateOrder(order.id)
           Redirect(DISPLAY_ORDERS_URL)
         }
@@ -92,6 +101,11 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
 
   // REACT
 
+  def clientsOrders(client: Long): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    clientOrdersRepository.getByClient(client).map(clientOrder => clientOrder.map(_.order))
+      .flatMap(orderIds => orderRepository.getByIds(orderIds)).map(orders => Ok(Json.toJson(orders)))
+  }
+
   def orders(): Action[AnyContent] = Action.async {
     orderRepository.list().map(orders => Ok(Json.toJson(orders)))
   }
@@ -99,7 +113,8 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
   def postOrder(): Action[AnyContent] = Action { implicit request =>
     val o = request.body.asJson.get.asInstanceOf[JsObject].value
     orderRepository.create(
-      o("reference").asInstanceOf[JsString].value
+      o("reference").asInstanceOf[JsString].value,
+      o("cart").asInstanceOf[JsString].value.toLong
     )
     Created("Order created")
   }
@@ -109,7 +124,8 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
     val id = o("id").asInstanceOf[JsString].value.toLong
     val order = Order(
       id,
-      o("reference").asInstanceOf[JsString].value
+      o("reference").asInstanceOf[JsString].value,
+      o("cart").asInstanceOf[JsString].value.toLong
     )
     orderRepository.update(id, order)
     Created(Json.toJson(order))
@@ -121,5 +137,5 @@ class OrderController @Inject()(orderRepository: OrderRepository, messagesContro
   }
 }
 
-case class CreateOrderForm(reference: String)
-case class UpdateOrderForm(id: Long, reference: String)
+case class CreateOrderForm(reference: String, cart: Long)
+case class UpdateOrderForm(id: Long, reference: String, cart: Long)

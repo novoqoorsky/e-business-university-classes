@@ -12,6 +12,8 @@ import SignUpForm from "./components/auth/SignUpForm";
 import SignInForm from "./components/auth/SignInForm";
 import SignOut from "./components/auth/SignOut";
 import AuthenticationService from "./services/AuthenticationService";
+import Profile from "./components/profile/Profile";
+import CreateProfile from "./components/profile/CreateProfile";
 
 class App extends Component {
 
@@ -37,6 +39,14 @@ class App extends Component {
             isAuthenticated: true
         });
     };
+
+    static checkError(response) {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw Error(response.statusText);
+        }
+    }
 
     render() {
         return <Router>
@@ -67,9 +77,14 @@ class App extends Component {
                             </>
                         )}
                         {this.state.isAuthenticated && (
-                            <li className="pure-menu-item pure-menu-selected">
-                                <Link to="/signout" className="pure-menu-link" onClick={this.onSignOut}>Sign out</Link>
-                            </li>
+                            <>
+                                <li className="pure-menu-item pure-menu-selected">
+                                    <Link to="/profile" className="pure-menu-link">My Profile</Link>
+                                </li>
+                                <li className="pure-menu-item pure-menu-selected">
+                                    <Link to="/signout" className="pure-menu-link" onClick={this.onSignOut}>Sign out</Link>
+                                </li>
+                            </>
                         )}
                     </ul>
 
@@ -77,7 +92,10 @@ class App extends Component {
                     <Route path="/productadd" component={ProductForm}/>
                     <Route path="/signup" component={SignUpForm}/>
                     <Route path="/signin" render={(props) => <SignInForm {...props} onSignIn={this.onSignIn}/>}/>
+                    <Route path="/profile" component={Profile}/>
                     <Route path="/signout" component={SignOut}/>
+
+                    <Route path="/create-profile" component={CreateProfile}/>
                 </div>
             </div>
 

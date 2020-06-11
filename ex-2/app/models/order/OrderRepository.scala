@@ -1,13 +1,15 @@
 package models.order
 
 import javax.inject.{Inject, Singleton}
+import models.cart.CartRepository
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class OrderRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
+class OrderRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
+                                 val cartRepository: CartRepository)(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._
@@ -17,21 +19,31 @@ class OrderRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(impli
 
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def reference = column[String]("reference")
+    def cart = column[Long]("cart")
 
-    def * = (id, reference) <> ((Order.apply _).tupled, Order.unapply)
+    def cartFk = foreignKey("cart_fk", cart, carts)(_.id)
+
+    def * = (id, reference, cart) <> ((Order.apply _).tupled, Order.unapply)
   }
 
-  private val orders = TableQuery[OrderTable]
+  import cartRepository.CartTable
 
-  def create(reference: String): Future[Order] = db.run {
-    (orders.map(o => (o.reference))
+  private val orders = TableQuery[OrderTable]
+  private val carts = TableQuery[CartTable]
+
+  def create(reference: String, cart: Long): Future[Order] = db.run {
+    (orders.map(o => (o.reference, o.cart))
       returning orders.map(_.id)
-      into ((reference, id) => Order(id, reference))
-      ) += (reference)
+      into { case ((reference, cart), id) => Order(id, reference, cart) }
+      ) += (reference, cart)
   }
 
   def list(): Future[Seq[Order]] = db.run {
     orders.result
+  }
+
+  def getByIds(ids: Seq[Long]): Future[Seq[Order]] = db.run {
+    orders.filter(_.id inSet ids).result
   }
 
   def getById(id: Long): Future[Order] = db.run {
