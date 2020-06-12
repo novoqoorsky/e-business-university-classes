@@ -1,18 +1,29 @@
 package controllers
 
+import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import javax.inject.{Inject, Singleton}
 import models.cart.{Cart, CartRepository}
+import models.cartproducts.CartProductsRepository
+import models.client.ClientRepository
+import models.product.ProductRepository
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc._
+import utils.silhouette.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CartController @Inject()(cartRepository: CartRepository, messagesControllerComponents: MessagesControllerComponents)(implicit executionContext: ExecutionContext)
+class CartController @Inject()(cartRepository: CartRepository,
+                               clientRepository: ClientRepository,
+                               productRepository: ProductRepository,
+                               cartProductsRepository: CartProductsRepository,
+                               messagesControllerComponents: MessagesControllerComponents,
+                               silhouette: Silhouette[DefaultEnv])(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
-  
+
   val DISPLAY_CARTS_URL = "/display-carts"
 
   val cartForm: Form[CreateCartForm] = Form {
@@ -94,6 +105,24 @@ class CartController @Inject()(cartRepository: CartRepository, messagesControlle
 
   def carts(): Action[AnyContent] = Action.async {
     cartRepository.list().map(carts => Ok(Json.toJson(carts)))
+  }
+
+  def cart(id: Long): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    cartRepository.getById(id).map(cart => Ok(Json.toJson(cart)))
+  }
+
+  def addProductToCart(cartUsersEmail: String, productId: Long): Action[AnyContent] = silhouette.SecuredAction {
+    clientRepository.getByEmail(cartUsersEmail).map({ client =>
+      cartProductsRepository.create(client.cart, productId)
+      productRepository.getById(productId).map(product =>
+        cartRepository.getById(client.cart).map(cart => {
+            cart.value += product.price
+            cartRepository.update(cart.id, cart)
+          }
+        )
+      )
+    })
+    Created("Product added to cart")
   }
 
   def postCart(): Action[AnyContent] = Action { implicit request =>

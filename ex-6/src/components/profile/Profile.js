@@ -10,9 +10,11 @@ class Profile extends Component {
         this.state = {
             profile: {},
             address: {},
-            cart: [],
+            cartContent: [],
+            cart: {},
             orders: []
         };
+        this.finalizeOrder = this.finalizeOrder.bind(this);
     }
 
     componentDidMount() {
@@ -33,13 +35,17 @@ class Profile extends Component {
                 if (data !== null) {
                     const state = this.state;
                     state.profile = data;
-                    this.setState(state)
+                    this.setState(state);
 
-                    this.fetchAddress();
-                    this.fetchCart();
-                    this.fetchOrderHistory();
+                    this.fetchData();
                 }
             });
+    }
+
+    fetchData() {
+        this.fetchAddress();
+        this.fetchCartContent();
+        this.fetchOrderHistory();
     }
 
     render() {
@@ -57,9 +63,15 @@ class Profile extends Component {
                         Your delivery address: {this.state.address.streetName} {this.state.address.houseNumber}, {this.state.address.postalCode} {this.state.address.city}
                     </div>
                     <br/>
-                    {this.state.cart.length !== 0 && <div>
-                        Your cart:
-                        {this.state.cart}
+                    {this.state.cartContent.length !== 0 && <div>
+                        Your cart - {this.state.cart.value} PLN:
+                        <div className="pure-g">
+                            {this.state.cartContent}
+                        </div>
+                        <br/>
+                        <button className="pure-button pure-button-primary" onClick={this.finalizeOrder}>
+                            Finalize order
+                        </button>
                     </div>}
                     <br/>
                     {this.state.orders.length !== 0 && <div>
@@ -69,6 +81,25 @@ class Profile extends Component {
                 </div>
             );
         }
+    }
+
+    finalizeOrder() {
+        fetch("http://localhost:9000/" + this.state.cart.id + "/finalize/" + this.state.profile.id, {
+            mode: 'cors',
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin':'http://localhost:3000',
+                'X-Auth-Token': AuthenticationService.getAuthToken()
+            },
+            method: 'POST',
+        }).then(_ => {
+            const state = this.state;
+            state.cart = {};
+            state.cartContent = [];
+            this.setState(state);
+            this.fetchOrderHistory();
+        });
     }
 
     fetchAddress() {
@@ -90,7 +121,7 @@ class Profile extends Component {
             });
     }
 
-    fetchCart() {
+    fetchCartContent() {
         fetch("http://localhost:9000/products-in-cart/" + this.state.profile.cart , {
             mode: 'cors',
             headers:{
@@ -105,15 +136,39 @@ class Profile extends Component {
             .then(data => {
                 let products = data.map((prod) => {
                     return (
-                        <div key={prod.id}>
-                            <div className="title">{prod.name}</div>
-                            <div>{prod.description}</div>
-                            <div>{prod.category}</div>
+                        <div className="pure-u-1-2" key={prod.id}>
+                            <div className="l-box">
+                                <div><b>{prod.name}</b></div>
+                                <div>{prod.description}</div>
+                                <div>{prod.producer}</div>
+                                <div>{prod.price} PLN </div>
+                            </div>
                         </div>
                     )
                 });
                 const state = this.state;
-                state.cart = products;
+                state.cartContent = products;
+                this.setState(state)
+            });
+
+        this.fetchCart();
+    }
+
+    fetchCart() {
+        fetch("http://localhost:9000/cart/" + this.state.profile.cart , {
+            mode: 'cors',
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin':'http://localhost:3000',
+                'X-Auth-Token': AuthenticationService.getAuthToken()
+            },
+            method: 'GET',
+        })
+            .then(response => App.checkError(response))
+            .then(cart => {
+                const state = this.state;
+                state.cart = cart;
                 this.setState(state)
             });
     }
@@ -134,7 +189,9 @@ class Profile extends Component {
                 let orders = data.map((order) => {
                     return (
                         <div key={order.id}>
-                            <div className="title">{order.reference}</div>
+                            <Link to={{
+                                pathname: "/order/" + order.reference
+                            }}>{order.reference}</Link>
                         </div>
                     )
                 });

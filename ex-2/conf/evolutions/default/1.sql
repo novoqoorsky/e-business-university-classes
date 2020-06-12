@@ -11,12 +11,12 @@ CREATE TABLE "product"
     "id"          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name"        VARCHAR NOT NULL,
     "description" TEXT    NOT NULL,
-    "category"    INT     NOT NULL,
-    "producer"    INT     NOT NULL,
+    "category"    VARCHAR NOT NULL,
+    "producer"    VARCHAR NOT NULL,
     "price"       INT     NOT NULL,
 
-    FOREIGN KEY (category) REFERENCES category (id),
-    FOREIGN KEY (producer) REFERENCES category (id)
+    FOREIGN KEY (category) REFERENCES category (name),
+    FOREIGN KEY (producer) REFERENCES producer (name)
 );
 
 CREATE TABLE "producer"

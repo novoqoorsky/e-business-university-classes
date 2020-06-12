@@ -54,6 +54,10 @@ class OrderRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
     orders.filter(_.id === id).result.headOption
   }
 
+  def getByReference(reference: String): Future[Order] = db.run {
+    orders.filter(_.reference === reference).result.head
+  }
+
   def delete(id: Long): Future[Unit] = db.run(orders.filter(_.id === id).delete).map(_ => ())
 
   def update(id: Long, newOrder: Order): Future[Unit] = {

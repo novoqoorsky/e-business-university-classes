@@ -1,8 +1,12 @@
 package controllers
 
+import java.util.UUID
+
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import javax.inject.{Inject, Singleton}
+import models.cart.CartRepository
+import models.client.ClientRepository
 import models.clientorders.ClientOrdersRepository
 import models.order.{Order, OrderRepository}
 import play.api.data.Form
@@ -15,7 +19,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class OrderController @Inject()(orderRepository: OrderRepository,
+                                cartRepository: CartRepository,
                                 clientOrdersRepository: ClientOrdersRepository,
+                                clientRepository: ClientRepository,
                                 messagesControllerComponents: MessagesControllerComponents,
                                 silhouette: Silhouette[DefaultEnv])(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
@@ -101,6 +107,10 @@ class OrderController @Inject()(orderRepository: OrderRepository,
 
   // REACT
 
+  def orderByReference(reference: String): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    orderRepository.getByReference(reference).map(order => Ok(Json.toJson(order)))
+  }
+
   def clientsOrders(client: Long): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
     clientOrdersRepository.getByClient(client).map(clientOrder => clientOrder.map(_.order))
       .flatMap(orderIds => orderRepository.getByIds(orderIds)).map(orders => Ok(Json.toJson(orders)))
@@ -134,6 +144,19 @@ class OrderController @Inject()(orderRepository: OrderRepository,
   def deleteOrderExternal(id: Long): Action[AnyContent] = Action { implicit request =>
     deleteOrder(id)
     Ok("Cart deleted")
+  }
+
+  def finalizeOrder(cartId: Long, clientId: Long): Action[AnyContent] = silhouette.SecuredAction {
+    orderRepository.create(UUID.randomUUID().toString, cartId).map(order => {
+      cartRepository.create(0).map(cart => {
+        clientRepository.getById(clientId).map(client => {
+          client.cart = cart.id
+          clientRepository.update(client.id, client)
+          clientOrdersRepository.create(clientId, order.id)
+        })
+      })
+    })
+    Created("Order finalized")
   }
 }
 

@@ -59,6 +59,9 @@ class ClientRepository @Inject() (dbConfigProvider: DatabaseConfigProvider,
     clients.filter(_.email === email).result.headOption
   }
 
+  def getByEmail(email: String): Future[Client] = db.run {
+    clients.filter(_.email === email).result.head
+  }
 
   def delete(id: Long): Future[Unit] = db.run(clients.filter(_.id === id).delete).map(_ => ())
 

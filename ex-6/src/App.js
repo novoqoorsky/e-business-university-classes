@@ -14,6 +14,7 @@ import SignOut from "./components/auth/SignOut";
 import AuthenticationService from "./services/AuthenticationService";
 import Profile from "./components/profile/Profile";
 import CreateProfile from "./components/profile/CreateProfile";
+import Order from "./components/order/Order";
 
 class App extends Component {
 
@@ -96,6 +97,7 @@ class App extends Component {
                     <Route path="/signout" component={SignOut}/>
 
                     <Route path="/create-profile" component={CreateProfile}/>
+                    <Route path="/order/:orderReference" component={Order}/>
                 </div>
             </div>
 

@@ -2,20 +2,17 @@ import React, {Component} from 'react';
 import AuthenticationService from "../../services/AuthenticationService";
 import App from "../../App";
 
-class Products extends Component {
+class Order extends Component {
 
     constructor() {
         super();
         this.state = {
-            products: [],
+            order: [],
         };
-        this.addToCart = this.addToCart.bind(this);
     }
 
     componentDidMount() {
-        const url = "http://localhost:9000/products";
-
-        fetch(url, {
+        fetch("http://localhost:9000/products-in-order/" + this.props.match.params.orderReference, {
             mode: 'cors',
             headers:{
                 'Accept': 'application/json',
@@ -35,19 +32,13 @@ class Products extends Component {
                                 <div>{prod.description}</div>
                                 <div>{prod.producer}</div>
                                 <div>{prod.price} PLN </div>
-                                <div><i>{prod.category}</i></div>
-                                <br/>
-                                <button className="pure-button pure-button-primary button-small" onClick={() => this.addToCart(prod.id)}>
-                                    Add to cart
-                                </button>
                             </div>
                         </div>
                     )
                 });
-                this.setState({products: products})
-            }).catch(error => {
-                console.log(error);
-                window.location.href = "/signin"
+                const state = this.state;
+                state.order = products;
+                this.setState(state)
             });
     }
 
@@ -55,26 +46,11 @@ class Products extends Component {
         return (
             <div className="content" style={{position:"absolute", left:"30px", top:"50px"}}>
                 <div className="pure-g">
-                    {this.state.products}
+                    {this.state.order}
                 </div>
             </div>
         )
     }
-
-    addToCart(product) {
-        const url = "http://localhost:9000/cart/" + AuthenticationService.userData.email + "/product/" + product;
-
-        fetch(url, {
-            mode: 'cors',
-            headers:{
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin':'http://localhost:3000',
-                'X-Auth-Token': AuthenticationService.getAuthToken()
-            },
-            method: 'POST',
-        })
-    }
 }
 
-export default Products;
+export default Order;

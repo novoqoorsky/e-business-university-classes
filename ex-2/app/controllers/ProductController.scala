@@ -5,6 +5,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import javax.inject.{Inject, Singleton}
 import models.cartproducts.CartProductsRepository
 import models.category.{Category, CategoryRepository}
+import models.order.OrderRepository
 import models.producer.{Producer, ProducerRepository}
 import models.product.{Product, ProductRepository}
 import play.api.data.Form
@@ -21,6 +22,7 @@ class ProductController @Inject()(productRepository: ProductRepository,
                                   categoryRepository: CategoryRepository,
                                   producerRepository: ProducerRepository,
                                   cartProductsRepository: CartProductsRepository,
+                                  orderRepository: OrderRepository,
                                   messagesControllerComponents: MessagesControllerComponents,
                                   silhouette: Silhouette[DefaultEnv])(implicit executionContext: ExecutionContext)
   extends MessagesAbstractController(messagesControllerComponents) {
@@ -34,8 +36,8 @@ class ProductController @Inject()(productRepository: ProductRepository,
     mapping(
       "name" -> nonEmptyText,
       "description" -> nonEmptyText,
-      "category" -> longNumber,
-      "producer" -> longNumber,
+      "category" -> nonEmptyText,
+      "producer" -> nonEmptyText,
       "price" -> number
     )(CreateProductForm.apply)(CreateProductForm.unapply)
   }
@@ -45,8 +47,8 @@ class ProductController @Inject()(productRepository: ProductRepository,
       "id" -> longNumber,
       "name" -> nonEmptyText,
       "description" -> nonEmptyText,
-      "category" -> longNumber,
-      "producer" -> longNumber,
+      "category" -> nonEmptyText,
+      "producer" -> nonEmptyText,
       "price" -> number
     )(UpdateProductForm.apply)(UpdateProductForm.unapply)
   }
@@ -140,6 +142,13 @@ class ProductController @Inject()(productRepository: ProductRepository,
     productRepository.list().map(products => Ok(Json.toJson(products)))
   }
 
+  def productsInOrder(orderReference: String): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    orderRepository.getByReference(orderReference).flatMap(order => {
+      cartProductsRepository.getByCart(order.cart).map(cartProduct => cartProduct.map(_.product))
+        .flatMap(productIds => productRepository.getByIds(productIds).map(products => Ok(Json.toJson(products))))
+    })
+  }
+
   def productsInCart(cart: Long): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
     cartProductsRepository.getByCart(cart).map(cartProduct => cartProduct.map(_.product))
       .flatMap(productIds => productRepository.getByIds(productIds).map(products => Ok(Json.toJson(products)))
@@ -151,8 +160,8 @@ class ProductController @Inject()(productRepository: ProductRepository,
     productRepository.create(
       p("name").asInstanceOf[JsString].value,
       p("description").asInstanceOf[JsString].value,
-      p("category").asInstanceOf[JsString].value.toLong,
-      p("producer").asInstanceOf[JsString].value.toLong,
+      p("category").asInstanceOf[JsString].value,
+      p("producer").asInstanceOf[JsString].value,
       p("price").asInstanceOf[JsString].value.toInt
     )
     Created("Product created")
@@ -165,8 +174,8 @@ class ProductController @Inject()(productRepository: ProductRepository,
       id,
       p("name").asInstanceOf[JsString].value,
       p("description").asInstanceOf[JsString].value,
-      p("category").asInstanceOf[JsString].value.toLong,
-      p("producer").asInstanceOf[JsString].value.toLong,
+      p("category").asInstanceOf[JsString].value,
+      p("producer").asInstanceOf[JsString].value,
       p("price").asInstanceOf[JsString].value.toInt
     )
     productRepository.update(id, product)
@@ -179,5 +188,5 @@ class ProductController @Inject()(productRepository: ProductRepository,
   }
 }
 
-case class CreateProductForm(name: String, description: String, category: Long, producer: Long, price: Int)
-case class UpdateProductForm(id: Long, name: String, description: String, category: Long, producer: Long, price: Int)
+case class CreateProductForm(name: String, description: String, category: String, producer: String, price: Int)
+case class UpdateProductForm(id: Long, name: String, description: String, category: String, producer: String, price: Int)
