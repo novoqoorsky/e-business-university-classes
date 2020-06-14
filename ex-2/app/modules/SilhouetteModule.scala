@@ -11,6 +11,7 @@ import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSig
 import com.mohiva.play.silhouette.impl.authenticators._
 import com.mohiva.play.silhouette.impl.providers._
 import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.{CookieSecretProvider, CookieSecretSettings}
+import com.mohiva.play.silhouette.impl.providers.oauth2.{FacebookProvider, GoogleProvider}
 import com.mohiva.play.silhouette.impl.providers.state.{CsrfStateItemHandler, CsrfStateSettings}
 import com.mohiva.play.silhouette.impl.services._
 import com.mohiva.play.silhouette.impl.util._
@@ -23,10 +24,11 @@ import models.user.services.{UserService, UserServiceImpl}
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 import net.ceedubs.ficus.readers.ValueReader
-import net.ceedubs.ficus.readers.EnumerationReader._ // DO NOT REMOVE
+import net.ceedubs.ficus.readers.EnumerationReader._
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.db.slick.DatabaseConfigProvider
+import play.api.libs.crypto.CookieSigner
 import play.api.libs.ws.WSClient
 import play.api.mvc.Cookie
 import utils.silhouette.DefaultEnv
@@ -196,5 +198,20 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
                                  passwordHasherRegistry: PasswordHasherRegistry): CredentialsProvider = {
 
     new CredentialsProvider(authInfoRepository, passwordHasherRegistry)
+  }
+
+  @Provides
+  def provideSocialProviderRegistry(facebookProvider: FacebookProvider, googleProvider: GoogleProvider): SocialProviderRegistry = {
+    SocialProviderRegistry(Seq(googleProvider, facebookProvider))
+  }
+
+  @Provides
+  def provideFacebookProvider(httpLayer: HTTPLayer, stateProvider: SocialStateHandler, configuration: Configuration): FacebookProvider = {
+    new FacebookProvider(httpLayer, stateProvider, configuration.underlying.as[OAuth2Settings]("silhouette.facebook"))
+  }
+
+  @Provides
+  def provideGoogleProvider(httpLayer: HTTPLayer, stateProvider: SocialStateHandler, configuration: Configuration): GoogleProvider = {
+    new GoogleProvider(httpLayer, stateProvider, configuration.underlying.as[OAuth2Settings]("silhouette.google"))
   }
 }

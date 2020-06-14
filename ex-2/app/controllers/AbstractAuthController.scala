@@ -1,7 +1,5 @@
 package controllers
 
-import java.util.UUID
-
 import com.mohiva.play.silhouette.api.Authenticator.Implicits._
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.services.AuthenticatorResult
@@ -10,7 +8,6 @@ import models.user.User
 import net.ceedubs.ficus.Ficus._
 import play.api.Configuration
 import play.api.i18n.I18nSupport
-import play.api.libs.json.{Format, JsObject, JsString, JsValue, Json, Writes}
 import play.api.mvc._
 import utils.silhouette.DefaultEnv
 
@@ -31,16 +28,9 @@ abstract class AbstractAuthController(silhouette: Silhouette[DefaultEnv],
         )
       case authenticator => authenticator
     }.flatMap { authenticator =>
-      silhouette.env.eventBus.publish(LoginEvent(user, request))
       silhouette.env.authenticatorService.init(authenticator).flatMap { token =>
-        silhouette.env.authenticatorService.embed(token, Ok(Json.obj(
-          "id" -> user.userID,
-          "token" -> token,
-          "firstName" -> user.firstName,
-          "lastName" -> user.lastName,
-          "role" -> user.role,
-          "email" -> user.email
-        )))
+        silhouette.env.eventBus.publish(LoginEvent(user, request))
+        silhouette.env.authenticatorService.embed(token, Ok(user.toJson(token)))
       }
     }
   }

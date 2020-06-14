@@ -7,6 +7,8 @@ class SignInForm extends Component {
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.signInWithFacebook = this.signInWithFacebook.bind(this);
+        this.signInWithGoogle = this.signInWithGoogle.bind(this);
     }
 
     handleSubmit(event) {
@@ -40,6 +42,18 @@ class SignInForm extends Component {
         this.props.history.push('/#');
     }
 
+    signInWithFacebook() {
+        this.authenticate("facebook")
+    }
+
+    signInWithGoogle() {
+        this.authenticate("google")
+    }
+
+    authenticate(provider) {
+        window.location.href = 'http://localhost:9000/authenticate/' + provider;
+    }
+
     render() {
 
         return (
@@ -58,10 +72,21 @@ class SignInForm extends Component {
                     <br/><br/>
                     <button className="pure-button pure-button-primary">Sign in</button>
                 </form>
+
+                <br/><br/>
+
+                <div>
+                    <button className="loginBtn loginBtn--facebook" onClick={() => this.signInWithFacebook()}>
+                        Sign In with Facebook
+                    </button>
+                    <br/>
+                    <button className="loginBtn loginBtn--google" onClick={() => this.signInWithGoogle()}>
+                        Sign In with Google
+                    </button>
+                </div>
             </div>
         );
     }
-
 }
 
 export default SignInForm;

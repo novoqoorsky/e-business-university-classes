@@ -4,6 +4,8 @@ GET           /sign-out                                    controllers.HomeContr
 POST          /sign-in                                     controllers.SignInController.submit
 POST          /sign-up                                     controllers.SignUpController.submit
 
+GET           /authenticate/:provider                      controllers.SocialAuthController.authenticate(provider)
+
 GET           /add-product                                 controllers.ProductController.addProduct
 POST          /added-product                               controllers.ProductController.saveAddedProduct
 GET           /update-product/:id                          controllers.ProductController.updateProduct(id: Long)

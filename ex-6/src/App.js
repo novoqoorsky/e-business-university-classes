@@ -15,6 +15,7 @@ import AuthenticationService from "./services/AuthenticationService";
 import Profile from "./components/profile/Profile";
 import CreateProfile from "./components/profile/CreateProfile";
 import Order from "./components/order/Order";
+import SocialAuthentication from "./components/auth/SocialAuthentication";
 
 class App extends Component {
 
@@ -95,6 +96,7 @@ class App extends Component {
                     <Route path="/signin" render={(props) => <SignInForm {...props} onSignIn={this.onSignIn}/>}/>
                     <Route path="/profile" component={Profile}/>
                     <Route path="/signout" component={SignOut}/>
+                    <Route path="/authenticate" render={(props) => <SocialAuthentication {...props} onSignIn={this.onSignIn}/>}/>
 
                     <Route path="/create-profile" component={CreateProfile}/>
                     <Route path="/order/:orderReference" component={Order}/>

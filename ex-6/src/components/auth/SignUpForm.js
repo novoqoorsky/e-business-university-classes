@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
+import SignInForm from "./SignInForm";
 
 class SignUpForm extends Component {
 
     constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.signUpWithFacebook = this.signUpWithFacebook.bind(this);
+        this.signUpWithGoogle = this.signUpWithGoogle.bind(this);
     }
 
     handleSubmit(event) {
@@ -25,6 +28,18 @@ class SignUpForm extends Component {
         });
 
         this.props.history.push('/#');
+    }
+
+    signUpWithFacebook() {
+        this.authenticate("facebook")
+    }
+
+    signUpWithGoogle() {
+        this.authenticate("google")
+    }
+
+    authenticate(provider) {
+        window.location.href = 'http://localhost:9000/authenticate/' + provider;
     }
 
     render() {
@@ -48,6 +63,18 @@ class SignUpForm extends Component {
                     <br/>
                     <button className="pure-button pure-button-primary">Sign up</button>
                 </form>
+
+                <br/><br/>
+
+                <div>
+                    <button className="loginBtn loginBtn--facebook" onClick={() => this.signUpWithFacebook()}>
+                        Sign Up with Facebook
+                    </button>
+                    <br/>
+                    <button className="loginBtn loginBtn--google" onClick={() => this.signUpWithFacebook()}>
+                        Sign Up with Google
+                    </button>
+                </div>
             </div>
         );
     }

@@ -24,9 +24,8 @@ libraryDependencies ++= Seq(
   "com.iheart" %% "ficus" % "1.4.3"
 )
 libraryDependencies ++= Seq(guice)
-
 libraryDependencies += filters
-
 libraryDependencies ++= Seq(ehcache)
+libraryDependencies += ws
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
