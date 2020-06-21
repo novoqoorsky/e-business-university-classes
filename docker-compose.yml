@@ -1,0 +1,23 @@
+"version": "3"
+services:
+  frontend:
+    container_name: e-business-front
+    build:
+      context: ./ex-6
+      dockerfile: Dockerfile
+    stdin_open: true
+    image: e-business-front
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ex-6:/usr/src/app
+  backend:
+    container_name: e-business-backend
+    build:
+      context: ./ex-2
+      dockerfile: Dockerfile
+    image: e-business-backend
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./ex-2:/usr/src/app

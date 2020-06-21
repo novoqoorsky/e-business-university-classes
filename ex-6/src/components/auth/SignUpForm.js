@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import SignInForm from "./SignInForm";
 
 class SignUpForm extends Component {
 

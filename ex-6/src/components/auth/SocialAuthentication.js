@@ -3,10 +3,6 @@ import AuthenticationService from "../../services/AuthenticationService";
 
 class SocialAuthentication extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         AuthenticationService.setUserData(JSON.parse(new URLSearchParams(window.location.search).get('body')));
         this.props.onSignIn();

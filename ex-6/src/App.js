@@ -58,7 +58,7 @@ class App extends Component {
 
                     <ul className="pure-menu-list">
                         <li className="pure-menu-item pure-menu-selected">
-                            <a href="#" className="pure-menu-link">Home</a>
+                            <a href="/" className="pure-menu-link">Home</a>
                         </li>
                         <li className="pure-menu-item pure-menu-selected">
                             <Link to="/products" className="pure-menu-link">Products</Link>

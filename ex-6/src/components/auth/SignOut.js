@@ -3,10 +3,6 @@ import AuthenticationService from "../../services/AuthenticationService";
 
 class SignOut extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         const url = "http://localhost:9000/sign-out";
 
@@ -20,8 +16,6 @@ class SignOut extends Component {
         });
 
         AuthenticationService.setUserData(undefined);
-
-        //this.props.history.push('/#');
     }
 
     render() {
